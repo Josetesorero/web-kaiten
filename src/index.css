@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #7B2CBF;
+  --color-accent: #ADFF2F;
+  --font-display: "Inter", sans-serif;
+  --color-background-light: #f7f6f8;
+  --color-background-dark: #0A0A0A;
+}
+
+@layer base {
+  :root {
+    background-color: #0A0A0A;
+    color: #FFFFFF;
+    color-scheme: dark;
+  }
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer utilities {
+  .hero-gradient {
+    background: radial-gradient(circle at 20% 50%, rgba(123, 44, 191, 0.15) 0%, rgba(10, 10, 10, 1) 100%);
+  }
+
+  .kanji-glow {
+    filter: drop-shadow(0 0 15px rgba(173, 255, 47, 0.4)) drop-shadow(0 0 30px rgba(123, 44, 191, 0.3));
+  }
+
+  .magnetic-ring {
+    border: 2px solid transparent;
+    background: linear-gradient(#0A0A0A, #0A0A0A) padding-box,
+      linear-gradient(45deg, #7B2CBF, #ADFF2F) border-box;
+  }
+}
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}

@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>KAITEN Digital Agency</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,700;0,900;1,900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#7B2CBF", // Electric Purple
+                        "accent": "#ADFF2F",  // Acid Green
+                        "background-light": "#f7f6f8",
+                        "background-dark": "#0A0A0A", // Deep Black
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .hero-gradient {
+            background: radial-gradient(circle at center, rgba(123, 44, 191, 0.15) 0%, rgba(10, 10, 10, 1) 70%);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased overflow-x-hidden">
+<!-- Header / Nav -->
+<header class="sticky top-0 z-50 w-full border-b border-white/10 bg-background-dark/80 backdrop-blur-md px-6 md:px-10 lg:px-20 py-4">
+<div class="max-w-7xl mx-auto flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="relative size-10 flex items-center justify-center">
+<!-- Ouroboros Symbol -->
+<svg class="w-full h-full text-slate-100" viewbox="0 0 100 100">
+<path d="M50 10 A40 40 0 1 1 49.9 10" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="8"></path>
+<circle class="animate-pulse" cx="50" cy="10" fill="#ADFF2F" r="3"></circle>
+</svg>
+</div>
+<h1 class="text-2xl font-black tracking-tighter text-white">KAITEN</h1>
+</div>
+<nav class="hidden md:flex items-center gap-10">
+<a class="text-sm font-medium hover:text-accent transition-colors" href="#home">Home</a>
+<a class="text-sm font-medium hover:text-accent transition-colors" href="#services">Services</a>
+<a class="text-sm font-medium hover:text-accent transition-colors" href="#portfolio">Portfolio</a>
+<a class="text-sm font-medium hover:text-accent transition-colors" href="#testimonials">Testimonials</a>
+<a class="text-sm font-medium hover:text-accent transition-colors" href="#contact">Contact</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="bg-primary hover:bg-primary/80 text-white px-6 py-2.5 rounded-lg text-sm font-bold transition-all transform hover:scale-105 active:scale-95">
+                    Cotizar proyecto
+                </button>
+</div>
+</div>
+</header>
+<main>
+<!-- Hero Section -->
+<section class="relative min-h-[90vh] flex flex-col items-center justify-center hero-gradient px-6 overflow-hidden" id="home">
+<div class="absolute inset-0 opacity-20 pointer-events-none" data-alt="Abstract subtle grid of acid green dots" style="background-image: radial-gradient(#ADFF2F 0.5px, transparent 0.5px); background-size: 30px 30px;">
+</div>
+<div class="relative z-10 flex flex-col items-center text-center max-w-4xl">
+<div class="mb-8 w-40 h-40 bg-background-dark rounded-full border-2 border-primary/30 flex items-center justify-center shadow-[0_0_50px_rgba(123,44,191,0.2)]">
+<svg class="w-32 h-32 text-white" viewbox="0 0 100 100">
+<path d="M50 15 A35 35 0 1 1 49.9 15" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="10"></path>
+<circle cx="50" cy="15" fill="#ADFF2F" r="4"></circle>
+</svg>
+</div>
+<h2 class="text-6xl md:text-8xl font-black italic uppercase tracking-tighter text-white mb-6">
+                    Gira hacia <br/>
+<span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">el futuro</span>
+</h2>
+<p class="text-slate-400 text-lg md:text-xl max-w-2xl mb-10 font-medium">
+                    Innovación digital de alto impacto para negocios que buscan redefinir los límites de la tecnología.
+                </p>
+<button class="bg-primary hover:bg-primary/80 shadow-[0_0_30px_rgba(123,44,191,0.4)] text-white px-10 py-4 rounded-xl text-lg font-black uppercase tracking-widest transition-all">
+                    Cotizar proyecto
+                </button>
+</div>
+</section>
+<!-- Services Section -->
+<section class="py-24 px-6 md:px-10 lg:px-20 bg-background-dark" id="services">
+<div class="max-w-7xl mx-auto">
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+<div>
+<span class="text-accent font-bold uppercase tracking-[0.3em] text-xs">Expertise</span>
+<h2 class="text-4xl md:text-5xl font-black text-white mt-2 italic">Nuestros Servicios</h2>
+</div>
+<p class="text-slate-400 max-w-md">Soluciones integrales diseñadas para dominar el mercado digital contemporáneo.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<!-- Service 1 -->
+<div class="group p-8 bg-slate-900/50 border border-slate-800 rounded-2xl hover:border-accent transition-all duration-300">
+<span class="material-symbols-outlined text-accent text-5xl mb-6 group-hover:scale-110 transition-transform">laptop_mac</span>
+<h3 class="text-xl font-bold text-white mb-3">Web Design</h3>
+<p class="text-slate-400 text-sm leading-relaxed">Sitios web personalizados con una experiencia de usuario inmersiva y diseño vanguardista.</p>
+</div>
+<!-- Service 2 -->
+<div class="group p-8 bg-slate-900/50 border border-slate-800 rounded-2xl hover:border-accent transition-all duration-300">
+<span class="material-symbols-outlined text-accent text-5xl mb-6 group-hover:scale-110 transition-transform">devices</span>
+<h3 class="text-xl font-bold text-white mb-3">Apps</h3>
+<p class="text-slate-400 text-sm leading-relaxed">Soluciones móviles nativas y multiplataforma robustas, escalables y orientadas al rendimiento.</p>
+</div>
+<!-- Service 3 -->
+<div class="group p-8 bg-slate-900/50 border border-slate-800 rounded-2xl hover:border-accent transition-all duration-300">
+<span class="material-symbols-outlined text-accent text-5xl mb-6 group-hover:scale-110 transition-transform">movie_edit</span>
+<h3 class="text-xl font-bold text-white mb-3">Video Editing</h3>
+<p class="text-slate-400 text-sm leading-relaxed">Narrativa visual de alta calidad con efectos dinámicos para cautivar a tu audiencia digital.</p>
+</div>
+<!-- Service 4 -->
+<div class="group p-8 bg-slate-900/50 border border-slate-800 rounded-2xl hover:border-accent transition-all duration-300">
+<span class="material-symbols-outlined text-accent text-5xl mb-6 group-hover:scale-110 transition-transform">shopping_cart</span>
+<h3 class="text-xl font-bold text-white mb-3">E-commerce</h3>
+<p class="text-slate-400 text-sm leading-relaxed">Tiendas online optimizadas para conversión con flujos de pago seguros y gestión inteligente.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Portfolio Section -->
+<section class="py-24 px-6 md:px-10 lg:px-20 bg-background-dark/50" id="portfolio">
+<div class="max-w-7xl mx-auto">
+<div class="mb-16">
+<span class="text-primary font-bold uppercase tracking-[0.3em] text-xs">Showcase</span>
+<h2 class="text-4xl md:text-5xl font-black text-white mt-2 italic">Portfolio</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+<!-- Portfolio Item 1 -->
+<div class="group relative aspect-[4/3] rounded-2xl overflow-hidden bg-slate-800">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-60" data-alt="Futuristic glowing interface design project" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXBLZlW5szpihqXSdemmmK07I5ShbOsnkpfRk2uhpB4HZwvVmG_WEBdCe28HsNmZ2ZzHbuHP-oo2Cv9gUUH5g68zON_-m_gmE78IubRlaliYZAif8Z6X9j_2ldP8hWVNkTxNm2J7x3-L-ounm_pa0jRNKhKNpoxBFu55dLzrJYkSzAOwU_gZe106PbOT1AcM9xFC0Ah1lMhs8Sav1uHnDy4GGimxVtYWYRm-7pAj2k-3V3Pr6iFaKeiGUZpwldOPRLYhIhDLDtaTBV"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background-dark via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-8 flex flex-col justify-end">
+<h4 class="text-white text-xl font-bold">Neo-Bank UI</h4>
+<p class="text-accent text-sm font-medium">Web App</p>
+</div>
+</div>
+<!-- Portfolio Item 2 -->
+<div class="group relative aspect-[4/3] rounded-2xl overflow-hidden bg-slate-800">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-60" data-alt="Modern tech workspace hardware setup" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDa0CDCwlaCBJWHup8RcmbxKWQ4Ivz0vckaxbeHznI9udpOkgKg_02X-GwvYe6lypCLeDavIWi-sKMtbNFwUX5We5KyGAdfLeJU0jvhZExtZ3otDRZlzjrXCsahirY2v8EcYVQS0nY7cEfnRfiNbZITg1N3AlEc-kK_1-KqiS_RYohF3YTzYexrrleKRc_wTD8CS3i0WvhcPyLCoRTkbby5Ao_607Hlzhjf9kiza05h75-jXZI1E8MlsbRLSkI2qQlyFAVvzES5LtCK"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background-dark via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-8 flex flex-col justify-end">
+<h4 class="text-white text-xl font-bold">Cyber-Edge Platform</h4>
+<p class="text-accent text-sm font-medium">Software Development</p>
+</div>
+</div>
+<!-- Portfolio Item 3 -->
+<div class="group relative aspect-[4/3] rounded-2xl overflow-hidden bg-slate-800">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-60" data-alt="Abstract digital liquid flow animation" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAyAO7eBlJVQGIMBRPa-yFA-rSVaEem1EqXsZyOQgdZ7ZQpGwz0QDeoFB0Vn2qBfzMWushQEJGKPIt88y08UyA-O2ngJhjmjJF-FMyuC9uyk82QUc1cz3U3xV8ubmc9BOzadggk0GEw3DUQpJ3MJda-EXac-Z3z_ioh0K7shvsLTmSVB6EWEUwynBFvBU40zCHwMnJTOUmsVZE273C6KEtz2_4pBQ9uVnvix_71QO7FaOYB987Y7YUtBhosBC6GB8Kgk4N_tqin9NAc"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background-dark via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-8 flex flex-col justify-end">
+<h4 class="text-white text-xl font-bold">Motion Flow</h4>
+<p class="text-accent text-sm font-medium">Video Production</p>
+</div>
+</div>
+<!-- Portfolio Item 4 -->
+<div class="group relative aspect-[4/3] rounded-2xl overflow-hidden bg-slate-800">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-60" data-alt="Creative team working on web analytics" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBOyF-YYC91vE54CeE3G_VOdLYe4AJXKl4eWF_kClOI4j4J90-v8toXU22eUp3J1Vaj91VjfA_sCl1Q77rIyTvCIhzmbb52dUXSlrHjYZjm1hs8g05Y4BUrOwkBb3Zb99jxwr10OHtlg6ok2UkM5cSjdM2uvQzbAKeEI7hF3XumNTeg7RO3lilS3OWBsQpzsSOREPRXMfVSDf8ZDEumIryC-tiQoMEMrGP24mAcuBWkoCpOm4OgSt2Z87ZDSZp07-XYtADmF4o4VBlO"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background-dark via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-8 flex flex-col justify-end">
+<h4 class="text-white text-xl font-bold">Vantage Shop</h4>
+<p class="text-accent text-sm font-medium">E-commerce</p>
+</div>
+</div>
+<!-- Portfolio Item 5 -->
+<div class="group relative aspect-[4/3] rounded-2xl overflow-hidden bg-slate-800">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-60" data-alt="Minimalist design concept layout" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDkDf8jJNA-feDV9Rg2lPp28lePS2ZA1-NvDPFIvTvxiTlEYTcx00QZxKk1PP3O6Gww4F3DBfWtP00aWvUSMjjU1WzrmnsFbp8__PCvUoQpFEVUjmggDkicfEqVZbPLQtMp4iCgZqMY6VKPcp-Mi-sIgZHxKdF-I46qls_x9yP5DjWctF-3LoN6WfPWUVED3FGPzy4IG4NqRYkNpc_hxZA1RNyaaXDkWOzao7Dkd7qbq_2K6IwRrhxj3ReF_yj1bAVeZDp5SqWHlpWM"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background-dark via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-8 flex flex-col justify-end">
+<h4 class="text-white text-xl font-bold">Zenith Studio</h4>
+<p class="text-accent text-sm font-medium">Creative Agency</p>
+</div>
+</div>
+<!-- Portfolio Item 6 -->
+<div class="group relative aspect-[4/3] rounded-2xl overflow-hidden bg-slate-800">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-60" data-alt="Programmer writing complex code in dark room" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCeage2CuzyufAJe6PmXmdDXODw0NFE3mSP7_9grcEvr6w2NvheZMYu2c95JKriVHNfoDOo2ZGQmp9FeMQCCQOCzm9sUXA8vX2fbj4gJVc0no9pQ8qzi_LwChFuvYLfLosH4mNxwfw5BYdwgIuiPLOLZfy0dDQtvBx15lIIyR7zOz0VZPraFm9MW_1bOUKXgI6s7Xe5_hALCqNe3X5D5fmA2PC4n8H8rJWppHB8iBl40npdygXk8ThHTA5hz3AXmzmKtH1ExCg-e1mf"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background-dark via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-8 flex flex-col justify-end">
+<h4 class="text-white text-xl font-bold">Crypto Dashboard</h4>
+<p class="text-accent text-sm font-medium">Web 3.0</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Testimonials Section -->
+<section class="py-24 px-6 md:px-10 lg:px-20 bg-background-dark" id="testimonials">
+<div class="max-w-7xl mx-auto">
+<div class="text-center mb-16">
+<span class="text-primary font-bold uppercase tracking-[0.3em] text-xs">Feedback</span>
+<h2 class="text-4xl md:text-5xl font-black text-white mt-2 italic">Testimonios</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<!-- Testimonial 1 -->
+<div class="p-8 bg-slate-900 border border-slate-800 rounded-2xl flex flex-col gap-6 relative">
+<span class="material-symbols-outlined text-primary text-4xl absolute -top-4 -left-2 bg-background-dark">format_quote</span>
+<p class="text-slate-300 italic leading-relaxed text-lg">"Kaiten transformó por completo nuestra presencia online. Su atención al detalle en el diseño web es insuperable."</p>
+<div class="flex items-center gap-4 mt-auto">
+<div class="size-12 rounded-full bg-slate-700" data-alt="Portrait of Sarah Jenkins">
+<img alt="" class="rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_BqLTauDQnNYLMgR0jgmh-wz27Z3CyYDlnQnyeozQFAUHeeulyMCYetpuJIOWbZk0Wir5S8xlWcmlqIyMyq5pKISFANbxfMfTBfzhIRc1iGWp5VB5aiROOg_ZG664euXKJ_a7KUr8dfA0i1lfux9QNk7yiHfw93cZZ103pupPUzoMGbOmC7-R8Fbtrbprn71T4H0BiuvlIBDX6JdfZK3qhEAJXC-pQ1s9S-B1zQk5vYkKI6Nom6mkBkkr0vkCy3nADcv2IYu__Qzi"/>
+</div>
+<div>
+<h5 class="text-white font-bold">Sarah Jenkins</h5>
+<p class="text-accent text-xs">CEO, TechFlow</p>
+</div>
+</div>
+</div>
+<!-- Testimonial 2 -->
+<div class="p-8 bg-slate-900 border border-slate-800 rounded-2xl flex flex-col gap-6 relative">
+<span class="material-symbols-outlined text-primary text-4xl absolute -top-4 -left-2 bg-background-dark">format_quote</span>
+<p class="text-slate-300 italic leading-relaxed text-lg">"La aplicación móvil que desarrollaron superó nuestras expectativas de rendimiento. El equipo es altamente profesional."</p>
+<div class="flex items-center gap-4 mt-auto">
+<div class="size-12 rounded-full bg-slate-700" data-alt="Portrait of Marcus Thorne">
+<img alt="" class="rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDEDcUZL4bCAvFM3iWLdtJxtYCEq5yO08HwtoPeOwnBlMQpOHcON8Kse9I1kCOvNGO06j1i5-3hwKckA8tH4ul0zi6AZfqdWQQacTHH-3H1d0Ru5ye4wHYg5PuiagKinFh-xmLSyxQxkp_g34LCK7AqBGF4gLx7z0aM8WPUd1VdYdIGVASSB9uHqlS_MQdZak83rOeyPwM7XXNCmn8bb9IKCP16qLF1yChd3Mb05Z38SnhTRkl5PEDYa_vM8d6rJb9fwFoZcUlp-aQp"/>
+</div>
+<div>
+<h5 class="text-white font-bold">Marcus Thorne</h5>
+<p class="text-accent text-xs">Product Director, Nexus</p>
+</div>
+</div>
+</div>
+<!-- Testimonial 3 -->
+<div class="p-8 bg-slate-900 border border-slate-800 rounded-2xl flex flex-col gap-6 relative">
+<span class="material-symbols-outlined text-primary text-4xl absolute -top-4 -left-2 bg-background-dark">format_quote</span>
+<p class="text-slate-300 italic leading-relaxed text-lg">"Sus ediciones de video le dieron a nuestra marca una voz visual moderna que resuena perfectamente con nuestra audiencia."</p>
+<div class="flex items-center gap-4 mt-auto">
+<div class="size-12 rounded-full bg-slate-700" data-alt="Portrait of Elena Rodriguez">
+<img alt="" class="rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAn9bFxSeWZTpqhafJPnV0jKykFoFtz_r8Vqe8jxcxj9N5Vd-Q5TOrglAXWZ610UoUagJsLnfn4fXAiDlImbalEiU-0LM4cnKlVoPk60E-rG1i2XjIMfFGXVVEIFjz94o2MGaVoFik0a3Z7rmJABfThV3VMGdvisEd3fxw6hj80m9EMyM60j3-_l8TwpWMEj6RyZQ8mQ1J6BzvE5JABtFvHk7CCSj0s8NCfG96z3wkB74RvYNB4M3VbmR1wBxj4wTnCp-c8WQM2-igI"/>
+</div>
+<div>
+<h5 class="text-white font-bold">Elena Rodriguez</h5>
+<p class="text-accent text-xs">Marketing Lead, Aura</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Contact Section -->
+<section class="py-24 px-6 md:px-10 lg:px-20 bg-background-dark/50" id="contact">
+<div class="max-w-4xl mx-auto">
+<div class="text-center mb-16">
+<span class="text-accent font-bold uppercase tracking-[0.3em] text-xs">Get in touch</span>
+<h2 class="text-4xl md:text-5xl font-black text-white mt-2 italic">Hablemos de tu proyecto</h2>
+</div>
+<form class="space-y-6">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="flex flex-col gap-2">
+<label class="text-xs font-bold uppercase tracking-widest text-slate-400">Nombre</label>
+<input class="w-full bg-slate-900 border border-slate-800 rounded-lg p-4 text-white focus:outline-none focus:border-primary transition-colors" placeholder="John Doe" type="text"/>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-xs font-bold uppercase tracking-widest text-slate-400">Email</label>
+<input class="w-full bg-slate-900 border border-slate-800 rounded-lg p-4 text-white focus:outline-none focus:border-primary transition-colors" placeholder="john@example.com" type="email"/>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-xs font-bold uppercase tracking-widest text-slate-400">Mensaje</label>
+<textarea class="w-full bg-slate-900 border border-slate-800 rounded-lg p-4 text-white focus:outline-none focus:border-primary transition-colors resize-none" placeholder="Cuéntanos tu visión..." rows="6"></textarea>
+</div>
+<button class="w-full bg-primary hover:bg-primary/90 text-white font-black py-4 rounded-xl uppercase tracking-widest text-lg transition-all" type="submit">
+                        Enviar mensaje
+                    </button>
+</form>
+<div class="mt-16 flex justify-center gap-8">
+<a class="text-primary hover:text-accent transition-colors" href="#"><span class="material-symbols-outlined text-4xl">public</span></a>
+<a class="text-primary hover:text-accent transition-colors" href="#"><span class="material-symbols-outlined text-4xl">share</span></a>
+<a class="text-primary hover:text-accent transition-colors" href="#"><span class="material-symbols-outlined text-4xl">alternate_email</span></a>
+<a class="text-primary hover:text-accent transition-colors" href="#"><span class="material-symbols-outlined text-4xl">hub</span></a>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-background-dark border-t border-white/5 py-16 px-6 md:px-10 lg:px-20">
+<div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
+<div class="col-span-1 md:col-span-2">
+<div class="flex items-center gap-3 mb-6">
+<svg class="size-8 text-white" viewbox="0 0 100 100">
+<path d="M50 10 A40 40 0 1 1 49.9 10" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="8"></path>
+<circle cx="50" cy="10" fill="#ADFF2F" r="3"></circle>
+</svg>
+<h2 class="text-2xl font-black text-white italic">KAITEN</h2>
+</div>
+<p class="text-slate-400 max-w-sm mb-6">
+                    Redefiniendo el panorama digital a través de la innovación, el diseño audaz y la tecnología de vanguardia.
+                </p>
+</div>
+<div>
+<h4 class="text-white font-bold mb-6">Enlaces</h4>
+<ul class="space-y-4">
+<li><a class="text-slate-400 hover:text-accent text-sm" href="#home">Inicio</a></li>
+<li><a class="text-slate-400 hover:text-accent text-sm" href="#services">Servicios</a></li>
+<li><a class="text-slate-400 hover:text-accent text-sm" href="#portfolio">Portfolio</a></li>
+<li><a class="text-slate-400 hover:text-accent text-sm" href="#contact">Contacto</a></li>
+</ul>
+</div>
+<div>
+<h4 class="text-white font-bold mb-6">Legal</h4>
+<ul class="space-y-4">
+<li><a class="text-slate-400 hover:text-accent text-sm" href="#">Privacidad</a></li>
+<li><a class="text-slate-400 hover:text-accent text-sm" href="#">Términos</a></li>
+<li><a class="text-slate-400 hover:text-accent text-sm" href="#">Cookies</a></li>
+</ul>
+</div>
+</div>
+<div class="max-w-7xl mx-auto mt-16 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-slate-500 text-sm">
+<p>© 2024 KAITEN Digital Agency. Todos los derechos reservados.</p>
+<div class="flex items-center gap-2">
+<span class="size-2 rounded-full bg-accent animate-pulse"></span>
+<span>System operational</span>
+</div>
+</div>
+</footer>
+</body></html>

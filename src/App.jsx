@@ -1,0 +1,1589 @@
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence, useMotionValue, useSpring, useTransform, useScroll } from 'framer-motion';
+
+const MagneticKanjiClock = ({ size = 260, minimalist = false }) => {
+  const [time, setTime] = useState(new Date());
+  const [showDigital, setShowDigital] = useState(false);
+
+  useEffect(() => {
+    const timer = setInterval(() => setTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const hours = time.getHours();
+  const minutes = time.getMinutes();
+  const seconds = time.getSeconds();
+  const ms = time.getMilliseconds();
+
+  const hourAngle = (hours % 12) * 30 - 90;
+  const continuousMinutes = minutes + seconds / 60 + ms / 60000;
+  const minuteAngle = continuousMinutes * 6 - 90;
+
+  const kanjiNumerals = ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十', '十一', '十二'];
+  const secondMarkers = Array.from({ length: 60 });
+
+  return (
+    <div
+      className="relative cursor-pointer group flex items-center justify-center mx-auto transition-all duration-500"
+      style={{ width: size, height: size }}
+      onClick={() => !minimalist && setShowDigital(!showDigital)}
+    >
+      {/* Background and Orbit Rings */}
+      <div className={`absolute inset-0 rounded-full flex items-center justify-center overflow-hidden transition-all duration-700 ${minimalist ? 'bg-transparent border-white/5' : 'bg-background-dark shadow-[0_0_80px_rgba(123,44,191,0.25)] border border-white/10'}`}>
+        <svg viewBox="0 0 100 100" className="w-full h-full">
+          {/* Orbiting Moons */}
+          {!minimalist && (
+            <motion.g
+              animate={{ rotate: 360 }}
+              transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+              style={{ transformOrigin: '50px 50px' }}
+            >
+              <circle cx="95" cy="50" r="1.5" fill="#ADFF2F" filter="url(#glowGreen)" />
+              <circle cx="5" cy="50" r="1" fill="#7B2CBF" filter="url(#glowPurple)" />
+            </motion.g>
+          )}
+          {!minimalist && (
+            <motion.g
+              animate={{ rotate: -360 }}
+              transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
+              style={{ transformOrigin: '50px 50px' }}
+            >
+              <circle cx="50" cy="5" r="1.2" fill="#ADFF2F" opacity="0.6" />
+              <circle cx="50" cy="95" r="0.8" fill="#7B2CBF" opacity="0.8" />
+            </motion.g>
+          )}
+
+          {/* Subtle background radial gradient */}
+          <defs>
+            {!minimalist && (
+              <radialGradient id="clockBg" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stopColor="#1A0A2E" stopOpacity="0.4" />
+                <stop offset="100%" stopColor="#0A0A0A" stopOpacity="1" />
+              </radialGradient>
+            )}
+
+            {/* Definitive Glow Filters using userSpaceOnUse to avoid bound clipping */}
+            <filter id="glowGreen" x="-50" y="-50" width="200" height="200" filterUnits="userSpaceOnUse">
+              <feGaussianBlur stdDeviation={minimalist ? "1" : "3.5"} result="blur" />
+              <feColorMatrix in="blur" type="matrix" values={minimalist ? "0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0" : "0 0 0 0 0.678  0 0 0 0 1  0 0 0 0 0.184  0 0 0 1.8 0"} result="coloredBlur" />
+              <feMerge>
+                <feMergeNode in="coloredBlur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+
+            <filter id="glowPurple" x="-50" y="-50" width="200" height="200" filterUnits="userSpaceOnUse">
+              <feGaussianBlur stdDeviation={minimalist ? "1" : "3.5"} result="blur" />
+              <feColorMatrix in="blur" type="matrix" values={minimalist ? "0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0" : "0 0 0 0 0.482  0 0 0 0 0.173  0 0 0 0 0.749  0 0 0 1.8 0"} result="coloredBlur" />
+              <feMerge>
+                <feMergeNode in="coloredBlur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
+
+          {!minimalist && <circle cx="50" cy="50" r="49" fill="url(#clockBg)" />}
+
+          <circle cx="50" cy="50" r="47" fill="none" stroke="rgba(255,255,255,0.03)" strokeWidth="0.5" />
+          <circle cx="50" cy="50" r="38" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" />
+          <circle cx="50" cy="50" r="28" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" />
+
+          {/* Circular Progress Second Hand (Now on the outer edge) */}
+          {secondMarkers.map((_, i) => {
+            const angle = (i * 6 - 90) * (Math.PI / 180);
+            const radius = 47.5;
+            const x = 50 + radius * Math.cos(angle);
+            const y = 50 + radius * Math.sin(angle);
+
+            const isLit = i <= seconds;
+            const isCurrent = i === seconds;
+
+            return (
+              <motion.circle
+                key={`sec-${i}`}
+                cx={x}
+                cy={y}
+                r={minimalist ? "0.3" : "0.5"}
+                initial={false}
+                animate={{
+                  fill: isLit ? (minimalist ? '#FFFFFF' : '#ADFF2F') : '#222222',
+                  scale: isCurrent && !minimalist ? [2, 1] : 1,
+                  opacity: isLit ? (minimalist ? 0.6 : 1) : 0.2
+                }}
+                transition={{
+                  scale: { duration: 0.3, ease: 'backOut' },
+                  fill: { duration: 0.1 }
+                }}
+              />
+            );
+          })}
+
+          {/* Hour Highlight Overlay (Behind Kanjis) */}
+          <g style={{ transform: `rotate(${hourAngle}deg)`, transformOrigin: '50px 50px' }} className="transition-transform duration-700">
+            {!minimalist && (
+              <>
+                <circle cx="88" cy="50" r="6" fill="#ADFF2F" opacity="0.3" filter="url(#glowGreen)" />
+                <circle cx="88" cy="50" r="4.5" fill="none" stroke="#ADFF2F" strokeWidth="1" opacity="0.6" />
+              </>
+            )}
+            {minimalist && (
+              <circle cx="88" cy="50" r="2" fill="white" opacity="0.4" />
+            )}
+          </g>
+
+          {/* Kanji Numerals (Traditional Stylized Design) - Hidden in minimalist mode */}
+          {!minimalist && kanjiNumerals.map((kanji, i) => {
+            const angle = ((i + 1) * 30 - 90) * (Math.PI / 180);
+            const radius = 38;
+            const x = 50 + radius * Math.cos(angle);
+            const y = 50 + radius * Math.sin(angle);
+            return (
+              <text
+                key={i}
+                x={x}
+                y={y}
+                fill="rgba(255,255,255,0.6)"
+                fontSize="7"
+                fontWeight="900"
+                fontFamily="'Shippori Mincho', serif"
+                textAnchor="middle"
+                dominantBaseline="central"
+                className="pointer-events-none select-none transition-all duration-500"
+                style={{ filter: (i + 1) % 12 === hours % 12 ? 'drop-shadow(0 0 5px rgba(255,255,255,0.8))' : 'none' }}
+              >
+                {kanji}
+              </text>
+            );
+          })}
+
+          {/* Minute Ball (Purple/White) */}
+          <g style={{ transform: `rotate(${minuteAngle}deg)`, transformOrigin: '50px 50px' }}>
+            <circle cx="78" cy="50" r={minimalist ? "1.5" : "3.2"} fill={minimalist ? "#FFFFFF" : "#7B2CBF"} filter={minimalist ? "none" : "url(#glowPurple)"} opacity={minimalist ? 0.8 : 1} />
+          </g>
+
+          {/* Hour Ball (Green/White - Only if minimalist needs a discrete marker) */}
+          {minimalist && (
+            <g style={{ transform: `rotate(${hourAngle}deg)`, transformOrigin: '50px 50px' }}>
+              <circle cx="68" cy="50" r="1.5" fill="white" opacity="0.8" />
+            </g>
+          )}
+
+          <circle cx="50" cy="50" r="1.5" fill="rgba(255,255,255,0.2)" />
+        </svg>
+      </div>
+
+      <AnimatePresence>
+        {showDigital && !minimalist && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            className="absolute inset-0 flex flex-col items-center justify-center bg-black/95 backdrop-blur-xl rounded-full pointer-events-none z-20 border border-white/10 text-center"
+          >
+            <div className="text-4xl font-black italic tracking-tighter text-white drop-shadow-[0_0_15px_rgba(173,255,47,0.3)]">
+              {time.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
+            </div>
+            <div className="text-[10px] uppercase tracking-[0.3em] text-accent font-bold mt-2 opacity-80">
+              LOCAL TIME
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
+const PixelClock = ({ visible }) => {
+  const [displayTime, setDisplayTime] = useState({ h: '00', m: '00', s: '00' });
+  const [isDecrypting, setIsDecrypting] = useState(false);
+  const [isManualHidden, setIsManualHidden] = useState(false);
+
+  useEffect(() => {
+    if (visible && !isManualHidden) {
+      setIsDecrypting(true);
+      const shuffleInterval = setInterval(() => {
+        setDisplayTime({
+          h: Math.floor(Math.random() * 100).toString().padStart(2, '0'),
+          m: Math.floor(Math.random() * 100).toString().padStart(2, '0'),
+          s: Math.floor(Math.random() * 100).toString().padStart(2, '0')
+        });
+      }, 60);
+
+      const timer = setTimeout(() => {
+        clearInterval(shuffleInterval);
+        setIsDecrypting(false);
+      }, 800);
+
+      return () => {
+        clearInterval(shuffleInterval);
+        clearTimeout(timer);
+      };
+    }
+  }, [visible, isManualHidden]);
+
+  useEffect(() => {
+    if (!isDecrypting) {
+      const updateClock = () => {
+        const now = new Date();
+        setDisplayTime({
+          h: now.getHours().toString().padStart(2, '0'),
+          m: now.getMinutes().toString().padStart(2, '0'),
+          s: now.getSeconds().toString().padStart(2, '0')
+        });
+      };
+      updateClock();
+      const timer = setInterval(updateClock, 1000);
+      return () => clearInterval(timer);
+    }
+  }, [isDecrypting]);
+
+  return (
+    <>
+      <AnimatePresence>
+        {visible && !isManualHidden && (
+          <motion.div
+            initial={{ opacity: 0, scale: 1.1, x: 20 }}
+            animate={{ opacity: 1, scale: 1, x: 0 }}
+            exit={{ opacity: 0, scale: 0.9, x: 20 }}
+            className="fixed bottom-8 right-8 z-[100] font-['VT323'] text-accent flex flex-col items-end pointer-events-auto select-none bg-black/40 backdrop-blur-md p-4 rounded-xl border border-accent/20 group"
+            style={{ textShadow: '0 0 15px rgba(173, 255, 47, 0.4)' }}
+          >
+            <button
+              onClick={() => setIsManualHidden(true)}
+              className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity text-accent hover:text-white"
+            >
+              <span className="material-symbols-outlined text-sm">close</span>
+            </button>
+            <div className="text-[10px] uppercase tracking-[0.4em] opacity-40 mb-1">Neural Clock v.1.0</div>
+            <div className="text-4xl md:text-5xl leading-none flex items-center gap-1">
+              <span>{displayTime.h}</span>
+              <span className={`transition-opacity duration-300 ${isDecrypting ? 'opacity-20' : 'animate-pulse opacity-50'}`}>:</span>
+              <span>{displayTime.m}</span>
+              <span className={`transition-opacity duration-300 ${isDecrypting ? 'opacity-20' : 'animate-pulse opacity-50'}`}>:</span>
+              <span>{displayTime.s}</span>
+            </div>
+            <div className="text-[10px] uppercase tracking-widest mt-1 opacity-60">
+              {new Date().toLocaleDateString('ja-JP')} // SYSTEM_STABLE
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {visible && isManualHidden && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            className="fixed bottom-8 right-8 z-[100]"
+          >
+            <button
+              onClick={() => setIsManualHidden(false)}
+              className="bg-black/50 border border-accent/30 text-accent p-3 rounded-full hover:bg-accent/20 transition-all shadow-[0_0_20px_rgba(173,255,47,0.2)] flex items-center justify-center group"
+            >
+              <span className="material-symbols-outlined group-hover:scale-110 transition-transform">schedule</span>
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
+};
+
+const LiquidGradientText = ({ children }) => {
+  const mouseX = useMotionValue(50);
+  const mouseY = useMotionValue(50);
+
+  const springX = useSpring(mouseX, { damping: 30, stiffness: 200 });
+  const springY = useSpring(mouseY, { damping: 30, stiffness: 200 });
+
+  const background = useTransform(
+    [springX, springY],
+    ([x, y]) => `radial-gradient(circle at ${x}% ${y}%, #ADFF2F 0%, #7B2CBF 35%, #5a189a 60%, #7B2CBF 100%)`
+  );
+
+  return (
+    <motion.span
+      onMouseMove={(e) => {
+        const rect = e.currentTarget.getBoundingClientRect();
+        mouseX.set(((e.clientX - rect.left) / rect.width) * 100);
+        mouseY.set(((e.clientY - rect.top) / rect.height) * 100);
+      }}
+      onMouseLeave={() => {
+        mouseX.set(50);
+        mouseY.set(50);
+      }}
+      className="relative text-transparent bg-clip-text cursor-default select-none inline-block pb-1"
+      style={{
+        backgroundImage: background,
+        backgroundSize: '200% 200%',
+        willChange: 'background-image, background-position'
+      }}
+      whileHover={{
+        scale: 1.02,
+        backgroundPosition: ['0% 0%', '80% 80%', '20% 80%', '80% 20%', '0% 0%'],
+        transition: {
+          scale: { duration: 0.4 },
+          backgroundPosition: { duration: 4, repeat: Infinity, ease: 'linear' }
+        }
+      }}
+    >
+      {children}
+    </motion.span>
+  );
+};
+
+const Navbar = () => (
+  <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-background-dark/80 backdrop-blur-md px-6 md:px-10 lg:px-20 py-4">
+    <div className="max-w-7xl mx-auto flex items-center justify-between">
+      <div className="flex items-center gap-3">
+        <div className="size-10 flex items-center justify-center">
+          <svg className="w-full h-full text-slate-100" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="40" fill="none" stroke="currentColor" strokeWidth="8" />
+            <circle className="animate-pulse" cx="10" cy="50" fill="#ADFF2F" r="4" />
+          </svg>
+        </div>
+        <h1 className="text-2xl font-black tracking-tighter text-white">KAITEN</h1>
+      </div>
+      <nav className="hidden md:flex items-center gap-10">
+        {['Home', 'Services', 'Portfolio', 'Testimonials', 'Contact'].map((item) => (
+          <a key={item} className="text-sm font-medium hover:text-accent transition-colors" href={`#${item.toLowerCase()}`}>{item}</a>
+        ))}
+      </nav>
+      <div className="flex items-center gap-4">
+        <button className="bg-primary hover:bg-primary/80 text-white px-6 py-2.5 rounded-lg text-sm font-bold transition-all transform hover:scale-105 active:scale-95">
+          Cotizar proyecto
+        </button>
+      </div>
+    </div>
+  </header>
+);
+
+const Hero = () => {
+  const { scrollYProgress } = useScroll();
+  const scrollProgress = useTransform(scrollYProgress, [0, 1], [0, 1]);
+
+  return (
+    <section className="relative min-h-[90vh] flex items-center justify-center hero-gradient px-6 md:px-10 lg:px-20 overflow-hidden" id="home">
+      <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ backgroundImage: "radial-gradient(#ADFF2F 0.5px, transparent 0.5px)", backgroundSize: "40px 40px" }}></div>
+
+      <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center z-10 relative">
+        <div className="relative flex justify-center lg:justify-start order-2 lg:order-1 transition-all duration-700 pointer-events-auto">
+          <div className="relative size-96 md:size-[600px] flex items-center justify-center">
+            <div className="absolute inset-0 rounded-full border border-white/5 animate-[spin_30s_linear_infinite]"></div>
+            <div className="absolute inset-12 rounded-full border border-primary/10 animate-[spin_20s_linear_infinite_reverse]"></div>
+            <div className="absolute inset-24 rounded-full magnetic-ring opacity-30 animate-[spin_15s_linear_infinite]"></div>
+
+            <div className="relative z-20 flex items-center justify-center kanji-glow rounded-full border-2 border-accent/10 bg-background-dark/30">
+              <div className="scale-110 md:scale-150 origin-center transition-transform">
+                <MagneticKanjiClock size={320} />
+              </div>
+            </div>
+
+            <div className="absolute top-0 right-10 size-6 bg-accent rounded-full blur-[3px] animate-pulse opacity-40"></div>
+            <div className="absolute bottom-10 left-0 size-8 bg-primary rounded-full blur-[4px] opacity-30"></div>
+          </div>
+        </div>
+
+        <div className="flex flex-col text-center lg:text-left order-1 lg:order-2">
+          <span className="text-accent font-bold uppercase tracking-[0.4em] text-xs mb-4 block">Next Gen Digital Agency</span>
+          <h2 className="text-6xl md:text-8xl lg:text-[100px] font-black italic uppercase tracking-tighter leading-[0.9] mb-8 text-white">
+            GIRA HACIA <br />
+            <LiquidGradientText>EL FUTURO</LiquidGradientText>
+          </h2>
+          <p className="text-slate-400 text-lg md:text-xl max-w-xl mb-12 font-medium leading-relaxed">
+            Innovación digital de alto impacto para negocios que buscan redefinir los límites de la tecnología. Diseñamos el mañana, hoy.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-5 justify-center lg:justify-start">
+            <button className="bg-primary hover:bg-primary/80 shadow-[0_0_30px_rgba(123,44,191,0.4)] text-white px-10 py-5 rounded-xl text-lg font-black uppercase tracking-widest transition-all transform hover:scale-105 active:scale-95 border-b-4 border-primary/50">
+              COTIZAR PROYECTO
+            </button>
+            <button className="border border-white/10 hover:bg-white/5 text-white px-8 py-5 rounded-xl text-lg font-bold transition-all active:scale-95">
+              Ver Portafolio
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Dark overlay that covers the section as we scroll down */}
+      <motion.div
+        className="absolute inset-x-0 bottom-0 top-[60%] bg-gradient-to-t from-background-dark via-background-dark/80 to-transparent pointer-events-none transition-opacity duration-500"
+        style={{ opacity: useTransform(scrollYProgress, [0, 0.25], [0, 1]), zIndex: 5 }}
+      />
+    </section>
+  );
+};
+
+const ServiceCard = ({ icon, title, description, features, cta, index, className }) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5, delay: index * 0.1 }}
+      whileHover={{
+        y: -10,
+        borderColor: '#7B2CBF',
+        boxShadow: '0 0 40px rgba(123, 44, 191, 0.2)'
+      }}
+      className={`p-8 md:p-10 bg-[#111111] border border-white/5 rounded-3xl transition-all duration-500 group cursor-default relative overflow-hidden flex flex-col h-full ${className || ''}`}
+    >
+      <div className="size-16 rounded-2xl bg-primary/5 flex items-center justify-center mb-8 group-hover:bg-primary/20 transition-all duration-500">
+        <span className="material-symbols-outlined text-accent text-5xl group-hover:scale-110 transition-transform duration-700">
+          {icon}
+        </span>
+      </div>
+      <h3 className="text-2xl md:text-3xl font-black text-white mb-4 italic uppercase tracking-tighter">{title}</h3>
+      <p className="text-slate-400 mb-8 leading-relaxed text-lg">{description}</p>
+
+      <div className="flex flex-wrap gap-2 mb-10">
+        {features.map((feature, i) => (
+          <span key={i} className="px-3 py-1 rounded-full bg-white/5 border border-white/5 text-xs font-bold text-slate-500 uppercase tracking-widest">
+            {feature}
+          </span>
+        ))}
+      </div>
+
+      <a href="#contact" className="inline-flex items-center gap-2 text-accent font-black uppercase tracking-widest text-sm group/link mt-auto">
+        {cta}
+        <span className="material-symbols-outlined text-lg group-hover/link:translate-x-2 transition-transform duration-300">east</span>
+      </a>
+
+      {/* Subtle corner glow */}
+      <div className="absolute -bottom-20 -right-20 size-40 bg-primary/10 blur-[60px] group-hover:bg-primary/30 transition-colors duration-700"></div>
+    </motion.div>
+  );
+};
+
+const ProximamenteCard = () => (
+  <motion.div
+    initial={{ opacity: 0, y: 30 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
+    transition={{ duration: 0.5, delay: 0.5 }}
+    className="mt-6 lg:mt-8 p-8 md:p-12 bg-[#0D0D0D] border-2 border-dashed border-[#444444] rounded-3xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8"
+  >
+    <div className="flex flex-col md:flex-row items-start md:items-center gap-6 z-10 w-full md:w-auto">
+      <div className="size-16 rounded-full bg-accent/10 flex items-center justify-center shrink-0 border border-accent/20">
+        <span className="material-symbols-outlined text-accent text-3xl">rocket_launch</span>
+      </div>
+      <div>
+        <div className="flex flex-wrap items-center gap-3 mb-2">
+          <h3 className="text-2xl md:text-3xl font-black text-white italic uppercase tracking-tighter">Más Servicios</h3>
+          <span className="px-3 py-1 rounded-full bg-primary/20 text-primary text-[10px] font-black uppercase tracking-widest border border-primary/30">Próximamente</span>
+        </div>
+        <p className="text-slate-400 font-medium">Estamos expandiendo nuestras soluciones para ti</p>
+      </div>
+    </div>
+
+    <div className="w-full md:w-auto flex-1 max-w-md z-10 flex flex-col sm:flex-row gap-3">
+      <input type="email" placeholder="Tu correo electrónico" className="w-full bg-[#111111] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors text-sm" />
+      <button className="bg-primary hover:bg-primary/80 shadow-[0_0_20px_rgba(123,44,191,0.3)] text-white px-6 py-3 rounded-xl text-sm font-bold uppercase tracking-widest transition-colors shrink-0">
+        Notifícame
+      </button>
+    </div>
+
+    {/* Subtle corner glow */}
+    <div className="absolute -top-20 -right-20 size-60 bg-primary/5 blur-[80px] pointer-events-none"></div>
+  </motion.div>
+);
+
+const Services = () => {
+  const servicesData = [
+    {
+      icon: 'web',
+      title: 'Páginas Web Informativas',
+      description: 'Landing pages elegantes y rápidas. Información clara de tu empresa, redes sociales y contacto directo.',
+      features: ['Responsive', 'SEO básico', 'Contacto', 'Redes'],
+      cta: 'Cotizar landing',
+      className: 'md:col-span-2 lg:col-span-2 lg:col-start-1 lg:row-start-1'
+    },
+    {
+      icon: 'draw',
+      title: 'Diseño Gráfico',
+      description: 'Identidad visual que comunica. Logos, branding, material publicitario y assets digitales.',
+      features: ['Logo design', 'Branding', 'Redes', 'Impresos'],
+      cta: 'Cotizar diseño',
+      className: 'md:col-span-1 lg:col-span-1 lg:col-start-1 lg:row-start-2'
+    },
+    {
+      icon: 'play_circle',
+      title: 'Edición de Video',
+      description: 'Contenido audiovisual que conecta. Edición profesional para redes, publicidad y presentaciones.',
+      features: ['Post-producción', 'Motion graphics', 'Color grading'],
+      cta: 'Cotizar video',
+      className: 'md:col-span-1 lg:col-span-1 lg:row-span-2 lg:col-start-3 lg:row-start-1'
+    },
+    {
+      icon: 'shopping_cart',
+      title: 'Tiendas Online & Ventas',
+      description: 'Catálogos y plataformas completas. Pasarelas de pago y control de inventario.',
+      features: ['Shopify', 'WooCommerce', 'Pagos'],
+      cta: 'Cotizar tienda',
+      className: 'md:col-span-2 lg:col-span-1 lg:col-start-2 lg:row-start-2'
+    },
+    {
+      icon: 'sync',
+      title: 'RCM - Gestión de Ingresos',
+      description: 'Optimización del ciclo de ingresos. Facturación electrónica, reportes y control de pagos.',
+      features: ['Facturación', 'Reportes', 'Automatización'],
+      cta: 'Cotizar RCM',
+      className: 'md:col-span-2 lg:col-span-3 lg:col-start-1 lg:row-start-3'
+    }
+  ];
+
+  return (
+    <section className="py-32 px-6 md:px-10 lg:px-20 bg-background-dark relative overflow-hidden" id="services">
+      <div className="max-w-7xl mx-auto relative z-10">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mb-16 lg:mb-24 text-center lg:text-left flex flex-col lg:flex-row lg:items-end justify-between gap-8"
+        >
+          <div className="max-w-3xl">
+            <span className="text-accent font-black uppercase tracking-[0.5em] text-xs mb-6 block drop-shadow-[0_0_10px_rgba(173,255,47,0.5)]">NUESTROS SERVICIOS</span>
+            <h2 className="text-5xl md:text-7xl lg:text-8xl font-black text-white italic tracking-tighter leading-[0.85] mb-8">
+              Soluciones digitales <br className="hidden md:block" />
+              a tu <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">medida</span>
+            </h2>
+          </div>
+          <p className="text-slate-400 text-xl font-medium max-w-sm lg:mb-4">Desde lo simple hasta lo complejo, llevamos tu presencia online al siguiente nivel</p>
+        </motion.div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+          {servicesData.map((service, index) => (
+            <ServiceCard key={index} {...service} index={index} />
+          ))}
+        </div>
+
+        <ProximamenteCard />
+      </div>
+
+      {/* Background accents */}
+      <div className="absolute top-0 right-0 size-96 bg-primary/5 blur-[120px] rounded-full pointer-events-none"></div>
+      <div className="absolute bottom-0 left-0 size-96 bg-accent/5 blur-[120px] rounded-full pointer-events-none"></div>
+    </section>
+  );
+};
+
+const PortfolioCard = ({ item }) => {
+  return (
+    <motion.div
+      layout
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.9 }}
+      transition={{ duration: 0.4 }}
+      className="group relative aspect-video rounded-2xl overflow-hidden bg-[#111111] border border-[#222222] cursor-pointer"
+    >
+      <img className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src={item.img} alt={item.title} />
+
+      <div className="absolute inset-x-0 bottom-0 h-[80%] bg-gradient-to-t from-black via-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-6 flex flex-col justify-end translate-y-4 group-hover:translate-y-0">
+        <h4 className="text-white text-2xl font-black italic mb-3">{item.title}</h4>
+        <div className="flex flex-wrap gap-2 mb-4">
+          {item.categories.map((cat, idx) => (
+            <span key={idx} className="px-2 py-1 rounded bg-[#1A1A1A] text-accent text-xs font-bold uppercase tracking-widest border border-accent/20">
+              {cat}
+            </span>
+          ))}
+        </div>
+        <div className="flex items-center gap-2 text-white font-bold text-sm hover:text-accent transition-colors">
+          Ver proyecto <span className="material-symbols-outlined text-base">arrow_forward</span>
+        </div>
+      </div>
+
+      {/* Glow effect on hover */}
+      <div className="absolute inset-0 border-2 border-transparent group-hover:border-[#7B2CBF]/50 rounded-2xl transition-colors duration-300"></div>
+      <div className="absolute inset-0 shadow-[inset_0_0_0_0_rgba(123,44,191,0)] group-hover:shadow-[inset_0_0_30px_rgba(123,44,191,0.2)] transition-shadow duration-300 pointer-events-none rounded-2xl"></div>
+    </motion.div>
+  );
+};
+
+const Portfolio = () => {
+  const [activeFilter, setActiveFilter] = useState('Todos');
+  const filters = ['Todos', 'Landing Pages', 'E-commerce', 'Diseño', 'Video', 'RCM'];
+
+  const projects = [
+    {
+      id: 1,
+      title: 'Clínica del Sol',
+      categories: ['Landing Pages', 'RCM'],
+      img: 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?q=80&w=800&auto=format&fit=crop'
+    },
+    {
+      id: 2,
+      title: 'Tienda Verde',
+      categories: ['E-commerce', 'Diseño'],
+      img: 'https://images.unsplash.com/photo-1616401784845-180882ba9ba8?q=80&w=800&auto=format&fit=crop'
+    },
+    {
+      id: 3,
+      title: 'Marca Personal Coach',
+      categories: ['Diseño', 'Video'],
+      img: 'https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=800&auto=format&fit=crop'
+    },
+    {
+      id: 4,
+      title: 'Restaurante Sabor',
+      categories: ['Video', 'Landing Pages'],
+      img: 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?q=80&w=800&auto=format&fit=crop'
+    },
+    {
+      id: 5,
+      title: 'Consultora ABC',
+      categories: ['Landing Pages', 'RCM'],
+      img: 'https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=800&auto=format&fit=crop'
+    },
+    {
+      id: 6,
+      title: 'Fitness Pro',
+      categories: ['E-commerce', 'Diseño', 'Video'],
+      img: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=800&auto=format&fit=crop'
+    }
+  ];
+
+  const filteredProjects = activeFilter === 'Todos'
+    ? projects
+    : projects.filter(p => p.categories.includes(activeFilter));
+
+  return (
+    <>
+      <section className="py-24 px-6 md:px-10 lg:px-20 bg-[#0A0A0A]" id="portfolio">
+        <div className="max-w-7xl mx-auto">
+
+          <div className="text-center mb-16 flex flex-col items-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              <span className="text-accent font-black uppercase tracking-[0.4em] text-xs mb-4 block">NUESTRO TRABAJO</span>
+              <h2 className="text-5xl md:text-6xl lg:text-7xl font-black text-white italic tracking-tighter leading-[0.9] mb-6">
+                Proyectos que hablan <br className="hidden md:block" /> por sí solos
+              </h2>
+              <p className="text-slate-400 text-lg font-medium">Cada proyecto es una historia de transformación digital</p>
+            </motion.div>
+          </div>
+
+          {/* Filters */}
+          <div className="flex overflow-x-auto pb-4 mb-12 hide-scrollbar justify-start md:justify-center gap-2 md:gap-4 px-2 -mx-2 md:mx-0">
+            {filters.map(filter => (
+              <button
+                key={filter}
+                onClick={() => setActiveFilter(filter)}
+                className={`whitespace-nowrap px-6 py-2.5 rounded-full text-sm font-bold uppercase tracking-widest transition-all duration-300 border ${activeFilter === filter
+                  ? 'bg-accent text-black border-accent shadow-[0_0_15px_rgba(173,255,47,0.4)]'
+                  : 'bg-transparent text-white border-[#222222] hover:border-white/40'
+                  }`}
+              >
+                {filter}
+              </button>
+            ))}
+          </div>
+
+          <motion.div layout className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <AnimatePresence>
+              {filteredProjects.map((item) => (
+                <PortfolioCard key={item.id} item={item} />
+              ))}
+            </AnimatePresence>
+          </motion.div>
+
+        </div>
+      </section>
+
+      {/* CTA Banner */}
+      <section className="py-20 px-6 bg-gradient-to-r from-[#7B2CBF] to-[#1A0A2E] border-y border-white/10 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDUiLz4KPC9zdmc+')] opacity-20"></div>
+        <div className="max-w-4xl mx-auto text-center relative z-10 flex flex-col items-center">
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-white italic tracking-tighter mb-4">
+            ¿Tienes un proyecto en mente?
+          </h2>
+          <p className="text-white/80 text-lg mb-10 font-medium max-w-lg">
+            Conversemos sobre tu idea y descubramos cómo podemos llevarla al siguiente nivel.
+          </p>
+          <a href="#contact" className="inline-block bg-black hover:bg-[#111111] text-white px-10 py-5 rounded-xl text-lg font-black uppercase tracking-widest transition-all transform hover:scale-105 shadow-[0_10px_30px_rgba(0,0,0,0.5)] border border-white/10 hover:border-accent">
+            COTIZAR AHORA
+          </a>
+        </div>
+      </section>
+    </>
+  );
+};
+
+const Testimonials = () => {
+  const testimonials = [
+    { text: "Kaiten transformó por completo nuestra presencia online. Su atención al detalle en el diseño web es insuperable.", name: "Sarah Jenkins", title: "CEO, TechFlow", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuC_BqLTauDQnNYLMgR0jgmh-wz27Z3CyYDlnQnyeozQFAUHeeulyMCYetpuJIOWbZk0Wir5S8xlWcmlqIyMyq5pKISFANbxfMfTBfzhIRc1iGWp5VB5aiROOg_ZG664euXKJ_a7KUr8dfA0i1lfux9QNk7yiHfw93cZZ103pupPUzoMGbOmC7-R8Fbtrbprn71T4H0BiuvlIBDX6JdfZK3qhEAJXC-pQ1s9S-B1zQk5vYkKI6Nom6mkBkkr0vkCy3nADcv2IYu__Qzi" },
+    { text: "La aplicación móvil que desarrollaron superó nuestras expectativas de rendimiento. El equipo es altamente profesional.", name: "Marcus Thorne", title: "Product Director, Nexus", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuDEDcUZL4bCAvFM3iWLdtJxtYCEq5yO08HwtoPeOwnBlMQpOHcON8Kse9I1kCOvNGO06j1i5-3hwKckA8tH4ul0zi6AZfqdWQQacTHH-3H1d0Ru5ye4wHYg5PuiagKinFh-xmLSyxQxkp_g34LCK7AqBGF4gLx7z0aM8WPUd1VdYdIGVASSB9uHqlS_MQdZak83rOeyPwM7XXNCmn8bb9IKCP16qLF1yChd3Mb05Z38SnhTRkl5PEDYa_vM8d6rJb9fwFoZcUlp-aQp" },
+    { text: "Sus ediciones de video le dieron a nuestra marca una voz visual moderna que resuena perfectamente con nuestra audiencia.", name: "Elena Rodriguez", title: "Marketing Lead, Aura", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuAn9bFxSeWZTpqhafJPnV0jKykFoFtz_r8Vqe8jxcxj9N5Vd-Q5TOrglAXWZ610UoUagJsLnfn4fXAiDlImbalEiU-0LM4cnKlVoPk60E-rG1i2XjIMfFGXVVEIFjz94o2MGaVoFik0a3Z7rmJABfThV3VMGdvisEd3fxw6hj80m9EMyM60j3-_l8TwpWMEj6RyZQ8mQ1J6BzvE5JABtFvHk7CCSj0s8NCfG96z3wkB74RvYNB4M3VbmR1wBxj4wTnCp-c8WQM2-igI" }
+  ];
+
+  return (
+    <section className="py-24 px-6 md:px-10 lg:px-20 bg-background-dark" id="testimonials">
+      <div className="max-w-7xl mx-auto">
+        <div className="text-center mb-16">
+          <span className="text-primary font-bold uppercase tracking-[0.3em] text-xs">Feedback</span>
+          <h2 className="text-4xl md:text-5xl font-black text-white mt-2 italic">Testimonios</h2>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {testimonials.map((t, i) => (
+            <div key={i} className="p-8 bg-slate-900 border border-slate-800 rounded-2xl flex flex-col gap-6 relative mt-4">
+              <span className="material-symbols-outlined text-primary text-4xl absolute -top-4 -left-2 bg-background-dark px-2">format_quote</span>
+              <p className="text-slate-300 italic leading-relaxed text-lg">"{t.text}"</p>
+              <div className="flex items-center gap-4 mt-auto">
+                <div className="size-12 rounded-full bg-slate-700">
+                  <img className="rounded-full w-full h-full object-cover" src={t.img} alt={t.name} />
+                </div>
+                <div>
+                  <h5 className="text-white font-bold">{t.name}</h5>
+                  <p className="text-accent text-xs">{t.title}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const ProcessCardDesktop = ({ step, index }) => {
+  const [isHovered, setIsHovered] = useState(false);
+  const [displayChar, setDisplayChar] = useState('-');
+
+  const targetNumber = (index + 1).toString();
+
+  useEffect(() => {
+    let interval;
+    if (isHovered) {
+      let ticks = 0;
+      interval = setInterval(() => {
+        if (ticks < 10) {
+          const chars = '0123456789!@#$%&*';
+          setDisplayChar(chars[Math.floor(Math.random() * chars.length)]);
+          ticks++;
+        } else {
+          setDisplayChar(targetNumber);
+          clearInterval(interval);
+        }
+      }, 40);
+    } else {
+      setDisplayChar('-');
+    }
+    return () => clearInterval(interval);
+  }, [isHovered, targetNumber]);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ delay: index * 0.2 }}
+      className="group pt-12 cursor-pointer h-full flex flex-col"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <div className="relative mb-8 flex justify-center">
+        <div className="size-16 rounded-2xl bg-[#111111] border border-white/10 flex items-center justify-center group-hover:border-accent transition-all duration-500 shadow-xl relative z-10">
+          <span className="material-symbols-outlined text-accent text-3xl">{step.icon}</span>
+        </div>
+      </div>
+
+      <div className="bg-[#111111] p-8 rounded-3xl border border-white/5 hover:border-primary/30 transition-all duration-500 hover:-translate-y-2 group-hover:shadow-[0_20px_40px_rgba(0,0,0,0.4)] relative overflow-hidden flex-grow flex flex-col">
+        <div className="flex justify-between items-start mb-4">
+          <h4 className="text-white font-black italic text-2xl group-hover:text-accent transition-colors relative z-10">{step.title}</h4>
+          <span className={`text-4xl font-black italic font-mono transition-opacity duration-300 relative z-10 ${isHovered ? 'opacity-100 text-transparent bg-clip-text bg-gradient-to-br from-primary to-accent' : 'opacity-0'}`}>
+            0{displayChar}
+          </span>
+        </div>
+        <p className="text-slate-400 leading-relaxed mb-6 relative z-10">{step.desc}</p>
+        <div className="flex items-center gap-2 text-primary text-xs font-black uppercase tracking-widest relative z-10 mt-auto">
+          <span className="material-symbols-outlined text-sm">schedule</span>
+          {step.time}
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+const ProcessCardMobile = ({ step, index }) => {
+  const [isHovered, setIsHovered] = useState(false);
+  const [displayChar, setDisplayChar] = useState('-');
+
+  const targetNumber = (index + 1).toString();
+
+  useEffect(() => {
+    let interval;
+    if (isHovered) {
+      let ticks = 0;
+      interval = setInterval(() => {
+        if (ticks < 10) {
+          const chars = '0123456789!@#$%&*';
+          setDisplayChar(chars[Math.floor(Math.random() * chars.length)]);
+          ticks++;
+        } else {
+          setDisplayChar(targetNumber);
+          clearInterval(interval);
+        }
+      }, 40);
+    } else {
+      setDisplayChar('-');
+    }
+    return () => clearInterval(interval);
+  }, [isHovered, targetNumber]);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: -20 }}
+      whileInView={{ opacity: 1, x: 0 }}
+      viewport={{ once: true }}
+      transition={{ delay: index * 0.2 }}
+      className="relative pl-8 md:pl-12 cursor-pointer"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onTouchStart={() => setIsHovered(true)}
+      onTouchEnd={() => setIsHovered(false)}
+    >
+      <div className="bg-[#111111] p-6 md:p-8 rounded-3xl border border-white/5 relative overflow-hidden group">
+        <div className="flex justify-between items-center mb-6">
+          <div className="size-12 rounded-xl bg-accent/10 flex items-center justify-center border border-accent/20">
+            <span className="material-symbols-outlined text-accent text-2xl">{step.icon}</span>
+          </div>
+          <span className={`text-4xl font-black italic font-mono transition-opacity duration-300 ${isHovered ? 'opacity-100 text-transparent bg-clip-text bg-gradient-to-br from-primary to-accent' : 'opacity-0'}`}>
+            0{displayChar}
+          </span>
+        </div>
+        <h4 className="text-white font-black italic text-2xl mb-3">{step.title}</h4>
+        <p className="text-slate-400 mb-6">{step.desc}</p>
+        <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 rounded-full text-primary text-xs font-black uppercase tracking-widest">
+          <span className="material-symbols-outlined text-sm">schedule</span>
+          {step.time}
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+const Process = () => {
+  const steps = [
+    {
+      id: '01',
+      title: 'Escuchamos',
+      desc: 'Entendemos tu negocio, objetivos y necesidades específicas',
+      time: '1-2 días',
+      icon: 'chat_bubble'
+    },
+    {
+      id: '02',
+      title: 'Planeamos',
+      desc: 'Diseño visual y propuesta técnica detallada con cotización fija',
+      time: '2-3 días',
+      icon: 'description'
+    },
+    {
+      id: '03',
+      title: 'Creamos',
+      desc: 'Desarrollo iterativo con tu feedback en cada etapa',
+      time: '1-4 semanas',
+      icon: 'code'
+    },
+    {
+      id: '04',
+      title: 'Lanzamos',
+      desc: 'Publicación, capacitación y soporte continuo post-lanzamiento',
+      time: 'Y más allá',
+      icon: 'rocket_launch'
+    }
+  ];
+
+  return (
+    <section className="py-24 px-6 md:px-10 lg:px-20 bg-[#0A0A0A] relative overflow-hidden" id="process">
+      <div className="max-w-7xl mx-auto relative z-10">
+        <div className="text-center mb-20">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <span className="text-accent font-black uppercase tracking-[0.5em] text-xs mb-4 block">CÓMO TRABAJAMOS</span>
+            <h2 className="text-5xl md:text-7xl font-black text-white italic tracking-tighter leading-[0.85] mb-6">
+              De tu idea a la <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">realidad digital</span>
+            </h2>
+            <p className="text-slate-400 text-xl font-medium max-w-2xl mx-auto">Un proceso claro, transparente y sin sorpresas</p>
+          </motion.div>
+        </div>
+
+        {/* Timeline Desktop */}
+        <div className="hidden lg:block relative mb-32">
+          {/* Connecting Line */}
+          <motion.div
+            initial={{ width: 0 }}
+            whileInView={{ width: '100%' }}
+            viewport={{ once: true }}
+            transition={{ duration: 1.5, ease: "easeInOut" }}
+            className="absolute top-1/2 left-0 h-[2px] bg-gradient-to-r from-primary via-accent to-primary transform -translate-y-1/2 z-0"
+          ></motion.div>
+
+          <div className="grid grid-cols-4 gap-8 relative z-10">
+            {steps.map((step, index) => (
+              <ProcessCardDesktop key={step.id} step={step} index={index} />
+            ))}
+          </div>
+        </div>
+
+        {/* Timeline Mobile/Tablet */}
+        <div className="lg:hidden relative pb-12">
+          {/* Vertical Line */}
+          <motion.div
+            initial={{ height: 0 }}
+            whileInView={{ height: '100%' }}
+            viewport={{ once: true }}
+            transition={{ duration: 1.5 }}
+            className="absolute left-4 top-0 w-[2px] bg-gradient-to-b from-primary via-accent to-primary z-0"
+          ></motion.div>
+
+          <div className="space-y-12">
+            {steps.map((step, index) => (
+              <ProcessCardMobile key={step.id} step={step} index={index} />
+            ))}
+          </div>
+        </div>
+
+      </div>
+    </section>
+  );
+};
+
+
+const ContactHub = () => {
+  const [step, setStep] = useState(1);
+  const [formData, setFormData] = useState({
+    service: '',
+    budget: '',
+    timeframe: '',
+    name: '',
+    email: '',
+    whatsapp: ''
+  });
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [discountCode, setDiscountCode] = useState('');
+  const [discountStatus, setDiscountStatus] = useState('idle'); // idle, loading, success, error
+  const [appliedDiscount, setAppliedDiscount] = useState(null);
+  const [discountMessage, setDiscountMessage] = useState('');
+
+  const steps = [
+    {
+      title: '¿QUÉ NECESITAS?',
+      options: [
+        'Landing page informativa',
+        'Tienda online / E-commerce',
+        'Diseño gráfico / Branding',
+        'Edición de video',
+        'Sistema RCM / Facturación',
+        'No estoy seguro, necesito asesoría'
+      ],
+      field: 'service'
+    },
+    {
+      title: '¿CUÁL ES TU PRESUPUESTO?',
+      options: [
+        'Menos de $150 USD',
+        '$150 - $400 USD',
+        '$400 - $800 USD',
+        'Más de $800 USD',
+        'Prefiero platicarlo primero'
+      ],
+      field: 'budget'
+    },
+    {
+      title: '¿CUÁNDO LO NECESITAS?',
+      options: [
+        'Lo antes posible',
+        'En 2-4 semanas',
+        'En 1-2 meses',
+        'Sin prisa, estoy planeando'
+      ],
+      field: 'timeframe'
+    }
+  ];
+
+  const handleOptionSelect = (option) => {
+    const currentField = steps[step - 1].field;
+    setFormData(prev => ({ ...prev, [currentField]: option }));
+    setTimeout(() => {
+      setStep(prev => Math.min(prev + 1, 4));
+    }, 300);
+  };
+
+  const validCodes = {
+    'KAITEN20': { percent: 20, description: '20% de descuento aplicado' },
+    'LANZAMIENTO': { percent: 15, description: '15% de descuento por lanzamiento' },
+    'AMIGO': { percent: 10, description: '10% de descuento especial' },
+    'WEB50': { percent: 50, description: '50% en Landing Pages' }
+  };
+
+  const handleApplyDiscount = () => {
+    if (!discountCode.trim()) return;
+
+    setDiscountStatus('loading');
+
+    setTimeout(() => {
+      const code = discountCode.trim().toUpperCase();
+      if (validCodes[code]) {
+        if (code === 'WEB50' && formData.service !== 'Landing page informativa') {
+          setDiscountStatus('error');
+          setDiscountMessage('El código WEB50 es solo para Landing Pages');
+          return;
+        }
+        setAppliedDiscount({ code, ...validCodes[code] });
+        setDiscountStatus('success');
+        setDiscountMessage(`¡${validCodes[code].percent}% de descuento aplicado!`);
+      } else {
+        setDiscountStatus('error');
+        setDiscountMessage('Código no válido o expirado');
+      }
+    }, 800);
+  };
+
+  const handleRemoveDiscount = () => {
+    setAppliedDiscount(null);
+    setDiscountCode('');
+    setDiscountStatus('idle');
+    setDiscountMessage('');
+  };
+
+  const getSimulatedPrice = () => {
+    switch (formData.budget) {
+      case 'Menos de $150 USD': return 120;
+      case '$150 - $400 USD': return 275;
+      case '$400 - $800 USD': return 600;
+      case 'Más de $800 USD': return 1200;
+      default: return 0;
+    }
+  };
+
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(price);
+  };
+
+  const handleFinalSubmit = (e) => {
+    e.preventDefault();
+    if (!formData.whatsapp) return;
+
+    setIsSuccess(true);
+
+    let message = `Hola Kaiten, soy ${formData.name}. Me interesa: ${formData.service}. Presupuesto: ${formData.budget}. Tiempo: ${formData.timeframe}. Mi email: ${formData.email}`;
+    if (appliedDiscount) {
+      message += `.\n\nTengo el código de descuento: ${appliedDiscount.code} (-${appliedDiscount.percent}%)`;
+    }
+
+    const encodedMessage = encodeURIComponent(message);
+    const whatsappUrl = `https://wa.me/584125626559?text=${encodedMessage}`;
+
+    setTimeout(() => {
+      window.open(whatsappUrl, '_blank');
+    }, 2000);
+  };
+
+  const progress = (step / 4) * 100;
+
+  return (
+    <section className="py-24 px-6 md:px-10 lg:px-20 bg-[#0A0A0A] relative overflow-hidden" id="contact">
+      <div className="max-w-7xl mx-auto relative z-10">
+        <div className="mb-20">
+          <span className="text-accent font-black uppercase tracking-[0.5em] text-xs mb-4 block">CONTACTO</span>
+          <h2 className="text-5xl md:text-7xl font-black text-white italic tracking-tighter leading-[0.85]">
+            Hablemos <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">de tu proyecto</span>
+          </h2>
+          <p className="text-slate-400 text-xl font-medium mt-6">Elige cómo quieres contactarnos: cotización rápida o contacto directo.</p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24">
+
+          {/* Main Content: WhatsApp Flow (70%) */}
+          <div className="lg:col-span-8 bg-[#111111] p-8 md:p-12 rounded-[2.5rem] border border-white/5 shadow-[0_30px_60px_rgba(0,0,0,0.6)] relative overflow-hidden">
+            {/* Progress Bar Container */}
+            <div className="mb-12">
+              <div className="w-full h-1 bg-white/5 rounded-full relative overflow-hidden">
+                <motion.div
+                  className="absolute top-0 left-0 h-full bg-accent shadow-[0_0_15px_#ADFF2F]"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${progress}%` }}
+                  transition={{ duration: 0.5 }}
+                />
+              </div>
+              <div className="flex justify-between mt-4">
+                {[1, 2, 3, 4].map(s => (
+                  <div key={s} className="flex flex-col items-center gap-1">
+                    <span className={`text-[10px] font-black tracking-widest transition-colors ${step >= s ? 'text-accent' : 'text-slate-600'}`}>PASO 0{s}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <AnimatePresence mode="wait">
+              {!isSuccess ? (
+                <motion.div
+                  key={step}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {step < 4 ? (
+                    <div className="space-y-8">
+                      <div className="flex items-center gap-4 mb-10">
+                        <span className="text-accent text-xs font-black uppercase tracking-[0.3em]">Cotización Rápida</span>
+                        <div className="h-px flex-grow bg-white/5"></div>
+                      </div>
+                      <h3 className="text-2xl md:text-3xl font-black text-white italic tracking-tight">{steps[step - 1].title}</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {steps[step - 1].options.map((option) => (
+                          <button
+                            key={option}
+                            onClick={() => handleOptionSelect(option)}
+                            className={`text-left p-6 rounded-2xl border transition-all duration-300 group relative overflow-hidden ${formData[steps[step - 1].field] === option
+                              ? 'bg-accent/10 border-accent shadow-[0_0_25px_rgba(173,255,47,0.15)]'
+                              : 'bg-[#161616] border-white/5 hover:border-accent/40 hover:bg-[#1a1a1a]'
+                              }`}
+                          >
+                            <div className="flex items-center justify-between relative z-10 transition-transform duration-300 group-active:scale-95">
+                              <span className={`font-bold text-lg transition-colors ${formData[steps[step - 1].field] === option ? 'text-white' : 'text-slate-400 group-hover:text-white'}`}>
+                                {option}
+                              </span>
+                              <div className={`size-6 rounded-full border-2 flex items-center justify-center transition-all duration-500 ${formData[steps[step - 1].field] === option ? 'border-accent bg-accent rotate-0 scale-100' : 'border-white/10 rotate-45 scale-75 opacity-0'
+                                }`}>
+                                {formData[steps[step - 1].field] === option && <span className="material-symbols-outlined text-[16px] text-black font-black">check</span>}
+                              </div>
+                            </div>
+                            {formData[steps[step - 1].field] === option && (
+                              <motion.div layoutId="optionGlow" className="absolute inset-0 bg-accent/5 pointer-events-none " />
+                            )}
+                          </button>
+                        ))}
+                      </div>
+                      <div className="pt-8 flex justify-between items-center">
+                        {step > 1 && (
+                          <button
+                            onClick={() => setStep(prev => prev - 1)}
+                            className="text-slate-500 hover:text-white text-xs font-black uppercase tracking-widest flex items-center gap-2 transition-colors"
+                          >
+                            <span className="material-symbols-outlined text-sm">arrow_back</span>
+                            Atrás
+                          </button>
+                        )}
+                        <p className="text-slate-600 text-[10px] uppercase font-bold tracking-widest ml-auto">Selecciona una opción para continuar</p>
+                      </div>
+                    </div>
+                  ) : (
+                    <form onSubmit={handleFinalSubmit} className="space-y-8">
+                      <div className="flex items-center gap-4 mb-10">
+                        <span className="text-accent text-xs font-black uppercase tracking-[0.3em]">Finalizar Cotización</span>
+                        <div className="h-px flex-grow bg-white/5"></div>
+                      </div>
+                      <h3 className="text-2xl md:text-3xl font-black text-white italic tracking-tight underline decoration-accent/30 decoration-4 underline-offset-8">TUS DATOS</h3>
+                      <div className="space-y-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div className="space-y-2">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Nombre completo</label>
+                            <input
+                              required
+                              type="text"
+                              value={formData.name}
+                              onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                              placeholder="Tu nombre"
+                              className="w-full bg-[#161616] border border-white/10 rounded-xl px-5 py-4 text-white focus:outline-none focus:border-accent transition-all placeholder:text-slate-700 underline-none"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Correo electrónico</label>
+                            <input
+                              required
+                              type="email"
+                              value={formData.email}
+                              onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                              placeholder="email@ejemplo.com"
+                              className="w-full bg-[#161616] border border-white/10 rounded-xl px-5 py-4 text-white focus:outline-none focus:border-accent transition-all placeholder:text-slate-700"
+                            />
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Número de WhatsApp</label>
+                          <div className="relative group">
+                            <input
+                              required
+                              type="tel"
+                              value={formData.whatsapp}
+                              onChange={(e) => setFormData(prev => ({ ...prev, whatsapp: e.target.value }))}
+                              placeholder="+58 412 562 6559"
+                              className="w-full bg-[#161616] border border-white/10 rounded-xl px-5 py-4 text-white focus:outline-none focus:border-accent transition-all placeholder:text-slate-700"
+                            />
+                            <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within:text-accent transition-colors">phone_iphone</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Discount Code Section */}
+                      <div className="pt-4 pb-2">
+                        <div className="bg-[#111111] border border-[#222222] rounded-2xl p-5 relative overflow-hidden shadow-inner">
+                          <label className="text-[10px] font-black uppercase tracking-widest text-[#ADFF2F] mb-3 block">¿Tienes un código de descuento?</label>
+
+                          {!appliedDiscount ? (
+                            <div className="flex gap-3">
+                              <div className="relative flex-grow">
+                                <input
+                                  type="text"
+                                  value={discountCode}
+                                  onChange={(e) => {
+                                    setDiscountCode(e.target.value.toUpperCase());
+                                    if (discountStatus === 'error') setDiscountStatus('idle');
+                                  }}
+                                  placeholder="Ingresa tu código"
+                                  className={`w-full bg-[#1A1A1A] border rounded-xl px-4 py-3 text-white focus:outline-none transition-all uppercase placeholder:normal-case font-bold tracking-wider ${discountStatus === 'error' ? 'border-red-500/50 focus:border-red-500 shadow-[0_0_10px_rgba(239,68,68,0.2)]' : 'border-[#333333] focus:border-accent'
+                                    }`}
+                                  disabled={discountStatus === 'loading'}
+                                />
+                                {discountStatus === 'error' && (
+                                  <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-red-500">cancel</span>
+                                )}
+                              </div>
+                              <button
+                                type="button"
+                                onClick={handleApplyDiscount}
+                                disabled={!discountCode.trim() || discountStatus === 'loading'}
+                                className="bg-[#7B2CBF] hover:bg-[#8e39db] disabled:bg-[#333333] disabled:text-slate-500 text-white font-bold px-6 py-3 rounded-xl transition-colors flex items-center justify-center min-w-[100px] shadow-[0_0_15px_rgba(123,44,191,0.3)] disabled:shadow-none"
+                              >
+                                {discountStatus === 'loading' ? (
+                                  <span className="material-symbols-outlined animate-spin text-xl">progress_activity</span>
+                                ) : (
+                                  'Aplicar'
+                                )}
+                              </button>
+                            </div>
+                          ) : (
+                            <div className="flex bg-[#ADFF2F]/10 border border-[#ADFF2F]/30 rounded-xl p-3 items-center justify-between shadow-[0_0_20px_rgba(173,255,47,0.1)]">
+                              <div className="flex items-center gap-3">
+                                <div className="size-8 rounded-full bg-[#ADFF2F] flex items-center justify-center shadow-[0_0_10px_rgba(173,255,47,0.5)]">
+                                  <span className="material-symbols-outlined text-black font-bold text-sm">check</span>
+                                </div>
+                                <div>
+                                  <p className="text-white font-bold tracking-wide">{appliedDiscount.code}</p>
+                                  <p className="text-[#ADFF2F] text-xs font-bold">{appliedDiscount.description}</p>
+                                </div>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={handleRemoveDiscount}
+                                className="size-8 flex items-center justify-center rounded-full hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
+                              >
+                                <span className="material-symbols-outlined text-sm">close</span>
+                              </button>
+                            </div>
+                          )}
+
+                          {discountStatus === 'error' && !appliedDiscount && (
+                            <p className="text-red-500 text-xs mt-2 font-bold">{discountMessage}</p>
+                          )}
+
+                          {/* Price Calculator Visualization */}
+                          {appliedDiscount && getSimulatedPrice() > 0 && (
+                            <div className="mt-4 pt-4 border-t border-white/5 flex items-end justify-between">
+                              <div>
+                                <p className="text-slate-500 text-[10px] uppercase font-bold tracking-widest mb-1">Inversión estimada</p>
+                                <p className="text-slate-500 font-bold line-through text-sm">{formatPrice(getSimulatedPrice())} USD</p>
+                              </div>
+                              <div className="text-right flex items-center gap-3">
+                                <span className="bg-[#ADFF2F]/20 text-[#ADFF2F] font-black text-xs px-2 py-1 rounded">- {appliedDiscount.percent}%</span>
+                                <p className="text-white font-black text-2xl">{formatPrice(getSimulatedPrice() * (1 - appliedDiscount.percent / 100))} <span className="text-sm text-slate-400">USD</span></p>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="pt-6 flex flex-col md:flex-row gap-4">
+                        <button
+                          type="button"
+                          onClick={() => setStep(3)}
+                          className="px-8 py-5 border border-white/10 rounded-2xl text-slate-500 font-bold hover:bg-white/5 transition-all uppercase tracking-widest text-sm"
+                        >
+                          Regresar
+                        </button>
+                        <button
+                          type="submit"
+                          className="flex-grow bg-[#25D366] hover:bg-[#20ba59] text-white font-black py-5 rounded-2xl uppercase tracking-[0.2em] text-lg transition-all shadow-[0_15px_35px_rgba(37,211,102,0.25)] flex items-center justify-center gap-3 active:scale-[0.98]"
+                        >
+                          <svg className="size-6 fill-current" viewBox="0 0 24 24">
+                            <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.417-.003 6.557-5.338 11.892-11.893 11.892-1.997-.001-3.951-.5-5.688-1.448l-6.305 1.652zm6.599-3.376c1.47.884 3.193 1.353 4.953 1.353 5.401 0 9.799-4.398 9.802-9.799.002-2.618-1.017-5.078-2.871-6.931-1.854-1.854-4.316-2.873-6.936-2.873-5.399 0-9.796 4.397-9.799 9.797-.001 1.761.468 3.479 1.357 4.953l-1.026 3.743 3.824-.997zm11.387-4.464c-.301-.15-1.779-.878-2.053-.978-.275-.1-.475-.15-.675.15-.199.301-.775.978-.95 1.178-.175.199-.35.225-.65.075-.3-.15-1.268-.467-2.413-1.487-.892-.795-1.494-1.778-1.669-2.078-.175-.3-.019-.462.13-.611.135-.134.3-.35.45-.525.148-.175.199-.301.3-.5.1-.199.05-.375-.025-.525-.075-.15-.675-1.625-.925-2.225-.244-.59-.491-.51-.675-.52-.174-.01-.374-.012-.574-.012s-.525.076-.8.376c-.275.3-1.05 1.028-1.05 2.508s1.075 2.903 1.225 3.103c.15.2.2.35.474.774 1.196 1.838 2.585 2.768 3.978 3.328.79.317 1.489.339 2.052.255.626-.094 1.778-.727 2.028-1.428s.25-.15.175-.3c-.075-.15-.275-.225-.575-.375z" />
+                          </svg>
+                          Enviar a WhatsApp
+                        </button>
+                      </div>
+                    </form>
+                  )}
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="success"
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="text-center py-10"
+                >
+                  <div className="size-24 bg-[#25D366]/20 rounded-full flex items-center justify-center mx-auto mb-8 border border-[#25D366]/30">
+                    <span className="material-symbols-outlined text-[#25D366] text-6xl animate-bounce">check_circle</span>
+                  </div>
+                  <h2 className="text-3xl font-black text-white italic mb-4">¡Todo listo!</h2>
+                  <p className="text-slate-400 text-lg mb-8">Abriendo WhatsApp para iniciar la conversación...</p>
+                  <div className="max-w-xs h-1.5 bg-white/5 mx-auto rounded-full overflow-hidden">
+                    <motion.div
+                      className="h-full bg-[#25D366] shadow-[0_0_15px_#25D366]"
+                      initial={{ width: 0 }}
+                      animate={{ width: '100%' }}
+                      transition={{ duration: 2 }}
+                    />
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* Info Side (30%) */}
+          <div className="lg:col-span-4 flex flex-col justify-between">
+            <div className="space-y-12">
+              <div className="flex items-center gap-4 mb-2">
+                <span className="text-slate-500 text-xs font-black uppercase tracking-[0.3em]">Hablamos Humano</span>
+                <div className="h-px flex-grow bg-white/5"></div>
+              </div>
+
+              <div className="grid grid-cols-1 gap-10">
+                <div className="flex items-center gap-6 group cursor-pointer">
+                  <div className="size-14 rounded-2xl bg-accent/10 flex items-center justify-center border border-accent/20 group-hover:bg-accent/20 transition-all duration-500">
+                    <span className="material-symbols-outlined text-accent text-3xl">chat</span>
+                  </div>
+                  <div>
+                    <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-1">WhatsApp</p>
+                    <a href="https://wa.me/584125626559" target="_blank" rel="noopener noreferrer" className="text-white text-xl font-bold hover:text-accent transition-colors">+58 412 562 6559</a>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-6 group cursor-pointer">
+                  <div className="size-14 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20 group-hover:bg-primary/20 transition-all duration-500">
+                    <span className="material-symbols-outlined text-primary text-3xl">mail</span>
+                  </div>
+                  <div>
+                    <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-1">Email</p>
+                    <a href="mailto:kaiten.ve@gmail.com" className="text-white text-xl font-bold hover:text-accent transition-colors">kaiten.ve@gmail.com</a>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-6 group">
+                  <div className="size-14 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 group-hover:bg-white/10 transition-all duration-500">
+                    <span className="material-symbols-outlined text-slate-400 text-3xl">schedule</span>
+                  </div>
+                  <div>
+                    <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-1">Horario</p>
+                    <p className="text-white text-xl font-bold">Lun-Vie: 9:00 - 18:00</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-8 bg-gradient-to-br from-[#111111] to-[#0D0D0D] border border-white/10 rounded-3xl relative overflow-hidden group">
+                <div className="relative z-10">
+                  <h4 className="text-white font-black italic text-2xl mb-4">Ubicación</h4>
+                  <p className="text-slate-400 text-lg leading-relaxed">Caracas, Venezuela / <br /> Remoto worldwide</p>
+                </div>
+                <div className="absolute top-0 right-0 size-64 bg-primary/10 blur-[60px] translate-x-1/2 -translate-y-1/2 rounded-full group-hover:bg-primary/20 transition-all duration-700"></div>
+                <div className="absolute bottom-0 right-0 p-4 opacity-10 group-hover:opacity-30 transition-opacity">
+                  <span className="material-symbols-outlined text-8xl text-white">public</span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-6">
+                <p className="text-xs font-black text-slate-500 uppercase tracking-[0.3em]">SOCIAL:</p>
+                <div className="flex gap-4">
+                  {['Instagram', 'LinkedIn', 'Behance'].map((social) => (
+                    <a key={social} href="#" className="size-10 rounded-full border border-white/10 flex items-center justify-center text-slate-400 hover:text-accent hover:border-accent transition-all">
+                      <span className="material-symbols-outlined text-xl">share</span>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Decorative background glow */}
+      <div className="absolute -bottom-40 -right-40 size-96 bg-primary/5 blur-[120px] rounded-full pointer-events-none"></div>
+    </section>
+  );
+};
+
+
+const Footer = () => {
+  const [email, setEmail] = useState('');
+  const [subscribed, setSubscribed] = useState(false);
+
+  const handleSubscribe = (e) => {
+    e.preventDefault();
+    if (email) {
+      setSubscribed(true);
+      setEmail('');
+      setTimeout(() => setSubscribed(false), 3000);
+    }
+  };
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  return (
+    <footer className="bg-black text-[#A1A1AA] pt-20 pb-10 px-6 md:px-10 lg:px-20 border-t border-[#222222]">
+      <div className="max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 mb-20">
+
+          {/* Column 1: Brand & Newsletter */}
+          <div className="space-y-8">
+            <div className="flex items-center gap-3">
+              <div className="size-8 flex items-center justify-center">
+                <svg className="underline w-full h-full text-white" viewBox="0 0 100 100">
+                  <circle cx="50" cy="50" r="40" fill="none" stroke="currentColor" strokeWidth="8" />
+                  <circle cx="10" cy="50" fill="#ADFF2F" r="4" />
+                </svg>
+              </div>
+              <h2 className="text-2xl font-black text-white italic">KAITEN</h2>
+            </div>
+            <p className="text-sm leading-relaxed max-w-xs">
+              Transformación digital que no se detiene. Innovación y diseño audaz para el futuro del RCM y el branding.
+            </p>
+
+            <div className="space-y-4 pt-4 border-t border-white/5">
+              <p className="text-white text-xs font-black uppercase tracking-widest">Newsletter</p>
+              <p className="text-xs">Recibe tips de diseño y tecnología</p>
+              <form onSubmit={handleSubscribe} className="relative group">
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Tu email"
+                  className="w-full bg-[#111111] border border-[#333333] rounded-xl py-3 px-4 text-white text-sm focus:outline-none focus:border-accent transition-all"
+                />
+                <button
+                  type="submit"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-primary hover:bg-primary/80 text-white rounded-lg p-1.5 transition-all"
+                >
+                  <span className="material-symbols-outlined text-sm">{subscribed ? 'check' : 'arrow_forward'}</span>
+                </button>
+              </form>
+              {subscribed && <p className="text-accent text-[10px] animate-pulse">¡Gracias por suscribirte!</p>}
+            </div>
+
+            <div className="flex gap-4 pt-2">
+              {['Instagram', 'LinkedIn', 'Behance', 'Dribbble'].map((social) => (
+                <a key={social} href="#" className="text-[#A1A1AA] hover:text-accent transition-colors">
+                  <span className="material-symbols-outlined text-xl">share</span>
+                </a>
+              ))}
+            </div>
+          </div>
+
+          {/* Column 2: Servicios */}
+          <div>
+            <h4 className="text-white font-black italic uppercase tracking-widest text-sm mb-8">Servicios</h4>
+            <ul className="space-y-4 text-sm font-medium">
+              {['Landing Pages', 'Diseño Gráfico', 'Edición Video', 'E-commerce', 'RCM'].map((link) => (
+                <li key={link}>
+                  <a href="#" className="hover:text-accent transition-all duration-300 flex items-center gap-2 group">
+                    <span className="w-0 h-[1px] bg-accent transition-all group-hover:w-3"></span>
+                    {link}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Column 3: Nosotros */}
+          <div>
+            <h4 className="text-white font-black italic uppercase tracking-widest text-sm mb-8">Nosotros</h4>
+            <ul className="space-y-4 text-sm font-medium">
+              {['Proceso', 'Portfolio', 'Contacto'].map((link) => (
+                <li key={link}>
+                  <a href={`#${link.toLowerCase()}`} className="hover:text-accent transition-all duration-300 flex items-center gap-2 group">
+                    <span className="w-0 h-[1px] bg-accent transition-all group-hover:w-3"></span>
+                    {link}
+                  </a>
+                </li>
+              ))}
+              <li>
+                <span className="text-white/30 cursor-not-allowed flex items-center gap-2">
+                  Blog <span className="text-[10px] bg-white/5 px-2 py-0.5 rounded border border-white/10">PRÓXIMAMENTE</span>
+                </span>
+              </li>
+            </ul>
+          </div>
+
+          {/* Column 4: Legal */}
+          <div>
+            <h4 className="text-white font-black italic uppercase tracking-widest text-sm mb-8">Legal</h4>
+            <ul className="space-y-4 text-sm font-medium">
+              {['Términos de servicio', 'Política de privacidad'].map((link) => (
+                <li key={link}>
+                  <a href="#" className="hover:text-accent transition-all duration-300 flex items-center gap-2 group">
+                    <span className="w-0 h-[1px] bg-accent transition-all group-hover:w-3"></span>
+                    {link}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+        </div>
+
+        {/* Bottom Bar */}
+        <div className="pt-8 border-t border-[#222222] flex flex-col md:flex-row justify-between items-center gap-6">
+          <p className="text-xs text-[#52525B]">© 2026 Kaiten. Todos los derechos reservados.</p>
+
+          <button
+            onClick={scrollToTop}
+            className="group flex items-center gap-3 text-xs font-black uppercase tracking-widest text-white hover:text-accent transition-colors"
+          >
+            <span>Back to top</span>
+            <div className="size-10 rounded-full border border-white/10 flex items-center justify-center group-hover:border-primary group-hover:bg-primary/10 transition-all">
+              <span className="material-symbols-outlined text-sm group-hover:-translate-y-1 transition-transform">arrow_upward</span>
+            </div>
+          </button>
+        </div>
+      </div>
+    </footer>
+  );
+};
+
+export default function App() {
+  const [showPixelClock, setShowPixelClock] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowPixelClock(window.scrollY > 150);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  return (
+    <div className="font-display bg-background-dark text-slate-100 antialiased overflow-x-hidden">
+      <Navbar />
+      <main>
+        <Hero />
+        <Services />
+        <Process />
+        <Portfolio />
+        <Testimonials />
+        <ContactHub />
+      </main>
+      <Footer />
+      <PixelClock visible={showPixelClock} />
+    </div>
+  );
+}
