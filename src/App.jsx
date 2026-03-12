@@ -450,11 +450,11 @@ const ZenEclipse = () => {
     <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0 overflow-hidden">
       
       {/* Intense Background Glow (Corona) */}
-      <div className="absolute rounded-full size-[500px] md:size-[800px] bg-[#ADFF2F]/20 blur-[100px] mix-blend-screen opacity-50 animate-pulse" style={{ animationDuration: '4s' }}></div>
-      <div className="absolute rounded-full size-[300px] md:size-[500px] bg-white/10 blur-[60px] mix-blend-screen"></div>
+      <div className="absolute rounded-full aspect-square w-[500px] md:w-[800px] bg-[#ADFF2F]/20 blur-[100px] mix-blend-screen opacity-50 animate-pulse" style={{ animationDuration: '4s' }}></div>
+      <div className="absolute rounded-full aspect-square w-[300px] md:w-[500px] bg-white/10 blur-[60px] mix-blend-screen"></div>
 
       {/* The Enso Mask (Zen Circle SVG - Optimized for performance) */}
-      <div className="relative size-[500px] md:size-[800px] lg:size-[1000px] flex items-center justify-center opacity-90">
+      <div className="relative aspect-square w-[90vw] sm:w-[500px] md:w-[800px] lg:w-[1000px] max-w-[1000px] max-h-[1000px] flex items-center justify-center opacity-90 overflow-visible">
         <motion.svg
           viewBox="0 0 200 200"
           className="w-full h-full absolute inset-0 text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.7)]"
