@@ -29,7 +29,7 @@ const MagneticKanjiClock = ({ size = 260, minimalist = false }) => {
       onClick={() => !minimalist && setShowDigital(!showDigital)}
     >
       {/* Background and Orbit Rings */}
-      <div className={`absolute inset-0 rounded-full flex items-center justify-center overflow-hidden transition-all duration-700 ${minimalist ? 'bg-transparent border-white/5' : 'bg-background-dark shadow-[0_0_80px_rgba(123,44,191,0.25)] border border-white/10'}`}>
+      <div className={`absolute inset-0 rounded-full flex items-center justify-center overflow-hidden transition-all duration-700 ${minimalist ? 'bg-transparent border-white/5' : 'bg-background-dark shadow-[0_0_80px_rgba(123, 44, 191,0.25)] border border-white/10'}`}>
         <svg viewBox="0 0 100 100" className="w-full h-full">
           {/* Orbiting Moons */}
           {!minimalist && (
@@ -245,7 +245,7 @@ const PixelClock = ({ visible }) => {
             initial={{ opacity: 0, scale: 1.1, x: 20 }}
             animate={{ opacity: 1, scale: 1, x: 0 }}
             exit={{ opacity: 0, scale: 0.9, x: 20 }}
-            className="fixed bottom-8 right-8 z-[100] font-['VT323'] text-accent flex flex-col items-end pointer-events-auto select-none bg-black/40 backdrop-blur-md p-4 rounded-xl border border-accent/20 group"
+            className="hidden md:flex fixed bottom-8 right-8 z-[100] font-['VT323'] text-accent flex-col items-end pointer-events-auto select-none bg-black/40 backdrop-blur-md p-4 rounded-xl border border-accent/20 group"
             style={{ textShadow: '0 0 15px rgba(173, 255, 47, 0.4)' }}
           >
             <button
@@ -275,7 +275,7 @@ const PixelClock = ({ visible }) => {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.8 }}
-            className="fixed bottom-8 right-8 z-[100]"
+            className="hidden md:flex fixed bottom-8 right-8 z-[100]"
           >
             <button
               onClick={() => setIsManualHidden(false)}
@@ -333,38 +333,53 @@ const LiquidGradientText = ({ children }) => {
   );
 };
 
-const Navbar = () => (
-  <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-background-dark/80 backdrop-blur-md px-6 md:px-10 lg:px-20 py-4">
-    <div className="max-w-7xl mx-auto flex items-center justify-between">
-      <div className="flex items-center gap-3">
-        <div className="size-10 flex items-center justify-center">
-          <svg className="w-full h-full text-slate-100" viewBox="0 0 100 100">
-            <circle cx="50" cy="50" r="40" fill="none" stroke="currentColor" strokeWidth="8" />
-            <circle className="animate-pulse" cx="10" cy="50" fill="#ADFF2F" r="4" />
-          </svg>
+const Navbar = () => {
+  const [activeTab, setActiveTab] = useState('Home'); // Assuming 'Home' is the default active tab
+  return (
+    <nav className="fixed w-full z-50 bg-[#0A0A0A]/80 backdrop-blur-xl border-b border-white/5 transition-all duration-300">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 md:px-8">
+        <div className="flex items-center justify-between h-16 sm:h-20">
+          <div className="flex-shrink-0 flex items-center gap-3 relative z-10">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-white/20 flex items-center justify-center">
+              <div className="w-3 h-3 sm:w-4 sm:h-4 bg-white rounded-full"></div>
+            </div>
+            <span className="text-white font-black text-xl sm:text-2xl tracking-tighter">KAITEN</span>
+          </div>
+          <div className="hidden md:flex flex-1 justify-center relative z-0">
+            <div className="flex items-center space-x-6 lg:space-x-12">
+              {['Home', 'Services', 'Portfolio', 'Testimonials', 'Contact'].map((item) => (
+                <button
+                  key={item}
+                  onClick={() => activeTab === item ? null : setActiveTab(item)}
+                  className={`text-sm font-medium transition-all duration-300 ${activeTab === item
+                      ? 'text-white'
+                      : 'text-white/50 hover:text-purple-400'
+                    }`}
+                >
+                  {item}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="relative z-10 flex space-x-2 sm:space-x-4">
+            <a href="#contact" className="glow-effect bg-purple-600/20 text-purple-400 hover:bg-purple-600 hover:text-white px-4 py-2 sm:px-6 sm:py-2.5 rounded-lg text-xs sm:text-sm font-bold transition-all duration-300 tracking-wider">
+              IMPULSAR MI NEGOCIO
+            </a>
+          </div>
         </div>
-        <h1 className="text-2xl font-black tracking-tighter text-white">KAITEN</h1>
       </div>
-      <nav className="hidden md:flex items-center gap-10">
-        {['Home', 'Services', 'Portfolio', 'Testimonials', 'Contact'].map((item) => (
-          <a key={item} className="text-sm font-medium hover:text-accent transition-colors" href={`#${item.toLowerCase()}`}>{item}</a>
-        ))}
-      </nav>
-      <div className="flex items-center gap-4">
-        <button className="bg-primary hover:bg-primary/80 text-white px-6 py-2.5 rounded-lg text-sm font-bold transition-all transform hover:scale-105 active:scale-95">
-          Cotizar proyecto
-        </button>
-      </div>
-    </div>
-  </header>
-);
+    </nav>
+  );
+};
 
 const Hero = () => {
   const { scrollYProgress } = useScroll();
   const scrollProgress = useTransform(scrollYProgress, [0, 1], [0, 1]);
+  const yText = useTransform(scrollYProgress, [0, 1], ['0%', '150%']);
+  const opacityText = useTransform(scrollYProgress, [0, 0.4], [1, 0]);
 
   return (
-    <section className="relative min-h-[90vh] flex items-center justify-center hero-gradient px-6 md:px-10 lg:px-20 overflow-hidden" id="home">
+    <section className="relative min-h-[90vh] flex items-center justify-center pt-24 lg:pt-0 hero-gradient px-6 md:px-10 lg:px-20 overflow-hidden" id="home">
       <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ backgroundImage: "radial-gradient(#ADFF2F 0.5px, transparent 0.5px)", backgroundSize: "40px 40px" }}></div>
 
       <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center z-10 relative">
@@ -385,24 +400,20 @@ const Hero = () => {
           </div>
         </div>
 
-        <div className="flex flex-col text-center lg:text-left order-1 lg:order-2">
-          <span className="text-accent font-bold uppercase tracking-[0.4em] text-xs mb-4 block">Next Gen Digital Agency</span>
-          <h2 className="text-6xl md:text-8xl lg:text-[100px] font-black italic uppercase tracking-tighter leading-[0.9] mb-8 text-white">
-            GIRA HACIA <br />
-            <LiquidGradientText>EL FUTURO</LiquidGradientText>
+        <motion.div className="flex flex-col text-center lg:text-left order-1 lg:order-2" style={{ y: yText, opacity: opacityText }}>
+          <span className="text-accent font-bold uppercase tracking-[0.4em] text-xs mb-4 block">La Agencia Para Líderes</span>
+          <h2 className="text-5xl sm:text-6xl md:text-8xl lg:text-[100px] font-black italic uppercase tracking-tighter leading-[0.9] mb-8 text-white">
+            DOMINA TU <br />
+            <LiquidGradientText>MERCADO</LiquidGradientText>
           </h2>
           <p className="text-slate-400 text-lg md:text-xl max-w-xl mb-12 font-medium leading-relaxed">
-            Innovación digital de alto impacto para negocios que buscan redefinir los límites de la tecnología. Diseñamos el mañana, hoy.
+            Construimos plataformas digitales que atraen clientes y multiplican tus ventas garantizado, para que tú te enfoques en escalar tu negocio.
           </p>
-          <div className="flex flex-col sm:flex-row gap-5 justify-center lg:justify-start">
-            <button className="bg-primary hover:bg-primary/80 shadow-[0_0_30px_rgba(123,44,191,0.4)] text-white px-10 py-5 rounded-xl text-lg font-black uppercase tracking-widest transition-all transform hover:scale-105 active:scale-95 border-b-4 border-primary/50">
-              COTIZAR PROYECTO
-            </button>
-            <button className="border border-white/10 hover:bg-white/5 text-white px-8 py-5 rounded-xl text-lg font-bold transition-all active:scale-95">
-              Ver Portafolio
-            </button>
+          <div className="flex flex-col sm:flex-row gap-5 justify-center lg:justify-start w-full px-4 sm:px-0">
+            <a href="#contact" className="inline-block w-full sm:w-auto bg-primary hover:bg-primary/80 shadow-[0_0_30px_rgba(123, 44, 191,0.4)] text-white px-8 sm:px-10 py-4 sm:py-5 rounded-xl text-base sm:text-lg font-black uppercase tracking-widest transition-all transform hover:scale-105 active:scale-95 border-b-4 border-primary/50 text-center">IMPULSAR MI NEGOCIO</a>
+            <a href="#portfolio" className="inline-block w-full sm:w-auto border border-white/10 hover:bg-white/5 text-white px-8 py-4 sm:py-5 rounded-xl text-base sm:text-lg font-bold transition-all active:scale-95 text-center">Ver Casos de Éxito</a>
           </div>
-        </div>
+        </motion.div>
       </div>
 
       {/* Dark overlay that covers the section as we scroll down */}
@@ -469,19 +480,14 @@ const ProximamenteCard = () => (
       </div>
       <div>
         <div className="flex flex-wrap items-center gap-3 mb-2">
-          <h3 className="text-2xl md:text-3xl font-black text-white italic uppercase tracking-tighter">Más Servicios</h3>
+          <h3 className="text-2xl md:text-3xl font-black text-white italic uppercase tracking-tighter">Nuevas Soluciones</h3>
           <span className="px-3 py-1 rounded-full bg-primary/20 text-primary text-[10px] font-black uppercase tracking-widest border border-primary/30">Próximamente</span>
         </div>
-        <p className="text-slate-400 font-medium">Estamos expandiendo nuestras soluciones para ti</p>
+        <p className="text-slate-400 font-medium">Nuevos productos en desarrollo para seguir acelerando tu crecimiento</p>
       </div>
     </div>
 
-    <div className="w-full md:w-auto flex-1 max-w-md z-10 flex flex-col sm:flex-row gap-3">
-      <input type="email" placeholder="Tu correo electrónico" className="w-full bg-[#111111] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors text-sm" />
-      <button className="bg-primary hover:bg-primary/80 shadow-[0_0_20px_rgba(123,44,191,0.3)] text-white px-6 py-3 rounded-xl text-sm font-bold uppercase tracking-widest transition-colors shrink-0">
-        Notifícame
-      </button>
-    </div>
+    <div className="w-full md:w-auto flex-1 max-w-md z-10 flex flex-col sm:flex-row gap-3"></div>
 
     {/* Subtle corner glow */}
     <div className="absolute -top-20 -right-20 size-60 bg-primary/5 blur-[80px] pointer-events-none"></div>
@@ -492,42 +498,42 @@ const Services = () => {
   const servicesData = [
     {
       icon: 'web',
-      title: 'Páginas Web Informativas',
-      description: 'Landing pages elegantes y rápidas. Información clara de tu empresa, redes sociales y contacto directo.',
-      features: ['Responsive', 'SEO básico', 'Contacto', 'Redes'],
-      cta: 'Cotizar landing',
+      title: 'Landing Pages de Alta Conversión',
+      description: 'Embudos digitales optimizados para capturar leads y generar ventas en automático las 24 horas del día.',
+      features: ['Orientado a ventas', 'Ultra-Rápido', 'Embudos'],
+      cta: 'Multiplicar ventas',
       className: 'md:col-span-2 lg:col-span-2 lg:col-start-1 lg:row-start-1'
     },
     {
       icon: 'draw',
-      title: 'Diseño Gráfico',
-      description: 'Identidad visual que comunica. Logos, branding, material publicitario y assets digitales.',
-      features: ['Logo design', 'Branding', 'Redes', 'Impresos'],
-      cta: 'Cotizar diseño',
+      title: 'Identidad Visual Premium',
+      description: 'Diseño que transmite confianza y autoridad. Elevamos la percepción de valor de tu marca.',
+      features: ['Branding', 'Marcas', 'Assets'],
+      cta: 'Elevar mi marca',
       className: 'md:col-span-1 lg:col-span-1 lg:col-start-1 lg:row-start-2'
     },
     {
       icon: 'play_circle',
-      title: 'Edición de Video',
-      description: 'Contenido audiovisual que conecta. Edición profesional para redes, publicidad y presentaciones.',
-      features: ['Post-producción', 'Motion graphics', 'Color grading'],
-      cta: 'Cotizar video',
+      title: 'Audiovisual Magnético',
+      description: 'Videos dinámicos que capturan la atención en 3 segundos y convierten espectadores en clientes.',
+      features: ['Edición TikTok/Reels', 'Animación', 'Alto impacto'],
+      cta: 'Hacer que me vean',
       className: 'md:col-span-1 lg:col-span-1 lg:row-span-2 lg:col-start-3 lg:row-start-1'
     },
     {
       icon: 'shopping_cart',
-      title: 'Tiendas Online & Ventas',
-      description: 'Catálogos y plataformas completas. Pasarelas de pago y control de inventario.',
+      title: 'E-commerce Escalables',
+      description: 'Sistemas de venta ininterrumpidos. Plataformas rápidas diseñadas para maximizar el ticket promedio.',
       features: ['Shopify', 'WooCommerce', 'Pagos'],
-      cta: 'Cotizar tienda',
+      cta: 'Vender online',
       className: 'md:col-span-2 lg:col-span-1 lg:col-start-2 lg:row-start-2'
     },
     {
       icon: 'sync',
-      title: 'RCM - Gestión de Ingresos',
-      description: 'Optimización del ciclo de ingresos. Facturación electrónica, reportes y control de pagos.',
-      features: ['Facturación', 'Reportes', 'Automatización'],
-      cta: 'Cotizar RCM',
+      title: 'Automatización RCM',
+      description: 'Control total de tu flujo de caja. Eliminamos el error humano en facturación y optimizamos pagos.',
+      features: ['Facturación', 'Inteligencia', 'Flujo de caja'],
+      cta: 'Optimizar ingresos',
       className: 'md:col-span-2 lg:col-span-3 lg:col-start-1 lg:row-start-3'
     }
   ];
@@ -542,13 +548,13 @@ const Services = () => {
           className="mb-16 lg:mb-24 text-center lg:text-left flex flex-col lg:flex-row lg:items-end justify-between gap-8"
         >
           <div className="max-w-3xl">
-            <span className="text-accent font-black uppercase tracking-[0.5em] text-xs mb-6 block drop-shadow-[0_0_10px_rgba(173,255,47,0.5)]">NUESTROS SERVICIOS</span>
-            <h2 className="text-5xl md:text-7xl lg:text-8xl font-black text-white italic tracking-tighter leading-[0.85] mb-8">
-              Soluciones digitales <br className="hidden md:block" />
-              a tu <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">medida</span>
+            <span className="text-accent font-black uppercase tracking-[0.5em] text-xs mb-6 block drop-shadow-[0_0_10px_rgba(173,255,47,0.5)]">RESULTADOS TANGIBLES</span>
+            <h2 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black text-white italic tracking-tighter leading-[0.85] mb-6 sm:mb-8">
+              Sistemas digitales que <br className="hidden md:block" />
+              generan <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">ventas</span>
             </h2>
           </div>
-          <p className="text-slate-400 text-xl font-medium max-w-sm lg:mb-4">Desde lo simple hasta lo complejo, llevamos tu presencia online al siguiente nivel</p>
+          <p className="text-slate-400 text-xl font-medium max-w-sm lg:mb-4">No solo creamos pantallas bonitas; construimos activos digitales diseñados para asegurar tu crecimiento.</p>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
@@ -588,14 +594,12 @@ const PortfolioCard = ({ item }) => {
             </span>
           ))}
         </div>
-        <div className="flex items-center gap-2 text-white font-bold text-sm hover:text-accent transition-colors">
-          Ver proyecto <span className="material-symbols-outlined text-base">arrow_forward</span>
-        </div>
+        
       </div>
 
       {/* Glow effect on hover */}
       <div className="absolute inset-0 border-2 border-transparent group-hover:border-[#7B2CBF]/50 rounded-2xl transition-colors duration-300"></div>
-      <div className="absolute inset-0 shadow-[inset_0_0_0_0_rgba(123,44,191,0)] group-hover:shadow-[inset_0_0_30px_rgba(123,44,191,0.2)] transition-shadow duration-300 pointer-events-none rounded-2xl"></div>
+      <div className="absolute inset-0 shadow-[inset_0_0_0_0_rgba(123, 44, 191,0)] group-hover:shadow-[inset_0_0_30px_rgba(123, 44, 191,0.2)] transition-shadow duration-300 pointer-events-none rounded-2xl"></div>
     </motion.div>
   );
 };
@@ -659,7 +663,7 @@ const Portfolio = () => {
               viewport={{ once: true }}
             >
               <span className="text-accent font-black uppercase tracking-[0.4em] text-xs mb-4 block">NUESTRO TRABAJO</span>
-              <h2 className="text-5xl md:text-6xl lg:text-7xl font-black text-white italic tracking-tighter leading-[0.9] mb-6">
+              <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white italic tracking-tighter leading-[0.9] mb-6">
                 Proyectos que hablan <br className="hidden md:block" /> por sí solos
               </h2>
               <p className="text-slate-400 text-lg font-medium">Cada proyecto es una historia de transformación digital</p>
@@ -698,13 +702,13 @@ const Portfolio = () => {
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDUiLz4KPC9zdmc+')] opacity-20"></div>
         <div className="max-w-4xl mx-auto text-center relative z-10 flex flex-col items-center">
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-white italic tracking-tighter mb-4">
-            ¿Tienes un proyecto en mente?
+            ¿Listo para dominar tu mercado?
           </h2>
           <p className="text-white/80 text-lg mb-10 font-medium max-w-lg">
-            Conversemos sobre tu idea y descubramos cómo podemos llevarla al siguiente nivel.
+            Agenda una consulta estratégica hoy y descubre cómo nuestro ecosistema digital multiplicará tus ingresos de forma medible.
           </p>
-          <a href="#contact" className="inline-block bg-black hover:bg-[#111111] text-white px-10 py-5 rounded-xl text-lg font-black uppercase tracking-widest transition-all transform hover:scale-105 shadow-[0_10px_30px_rgba(0,0,0,0.5)] border border-white/10 hover:border-accent">
-            COTIZAR AHORA
+          <a href="#contact" className="inline-block w-full sm:w-auto bg-black hover:bg-[#111111] text-white px-8 sm:px-10 py-4 sm:py-5 rounded-xl text-base sm:text-lg font-black uppercase tracking-widest transition-all transform hover:scale-105 shadow-[0_10px_30px_rgba(0,0,0,0.5)] border border-white/10 hover:border-accent">
+            AGENDAR CONSULTA GRATUITA
           </a>
         </div>
       </section>
@@ -724,7 +728,7 @@ const Testimonials = () => {
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <span className="text-primary font-bold uppercase tracking-[0.3em] text-xs">Feedback</span>
-          <h2 className="text-4xl md:text-5xl font-black text-white mt-2 italic">Testimonios</h2>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white mt-2 italic">Testimonios</h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {testimonials.map((t, i) => (
@@ -869,29 +873,29 @@ const Process = () => {
   const steps = [
     {
       id: '01',
-      title: 'Escuchamos',
-      desc: 'Entendemos tu negocio, objetivos y necesidades específicas',
+      title: 'Auditoría Estratégica',
+      desc: 'Mapeamos tu negocio y detectamos fugas de clientes para diseñar un plan de ataque.',
       time: '1-2 días',
       icon: 'chat_bubble'
     },
     {
       id: '02',
-      title: 'Planeamos',
-      desc: 'Diseño visual y propuesta técnica detallada con cotización fija',
+      title: 'Plano de Conversión',
+      desc: 'Diseñamos wireframes y prototipos enfocados en guiar al usuario hacia la compra.',
       time: '2-3 días',
       icon: 'description'
     },
     {
       id: '03',
-      title: 'Creamos',
-      desc: 'Desarrollo iterativo con tu feedback en cada etapa',
+      title: 'Desarrollo Digital',
+      desc: 'Programamos tu solución con código limpio y animaciones fluidas que enamoran.',
       time: '1-4 semanas',
       icon: 'code'
     },
     {
       id: '04',
-      title: 'Lanzamos',
-      desc: 'Publicación, capacitación y soporte continuo post-lanzamiento',
+      title: 'Lanzamiento y Escala',
+      desc: 'Te entregamos las llaves de tu nuevo motor de ventas, listo para escalar tu negocio.',
       time: 'Y más allá',
       icon: 'rocket_launch'
     }
@@ -906,11 +910,11 @@ const Process = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <span className="text-accent font-black uppercase tracking-[0.5em] text-xs mb-4 block">CÓMO TRABAJAMOS</span>
-            <h2 className="text-5xl md:text-7xl font-black text-white italic tracking-tighter leading-[0.85] mb-6">
-              De tu idea a la <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">realidad digital</span>
+            <span className="text-accent font-black uppercase tracking-[0.5em] text-xs mb-4 block">NUESTRO MÉTODO</span>
+            <h2 className="text-4xl sm:text-5xl md:text-7xl font-black text-white italic tracking-tighter leading-[0.85] mb-6">
+              Un flujo de trabajo <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">para ganar</span>
             </h2>
-            <p className="text-slate-400 text-xl font-medium max-w-2xl mx-auto">Un proceso claro, transparente y sin sorpresas</p>
+            <p className="text-slate-400 text-xl font-medium max-w-2xl mx-auto">Sin demoras, sin excusas. Solo resultados construidos paso a paso.</p>
           </motion.div>
         </div>
 
@@ -974,7 +978,7 @@ const ContactHub = () => {
 
   const steps = [
     {
-      title: '¿QUÉ NECESITAS?',
+      title: '¿CÓMO PODEMOS IMPULSAR TU NEGOCIO?',
       options: [
         'Landing page informativa',
         'Tienda online / E-commerce',
@@ -986,18 +990,18 @@ const ContactHub = () => {
       field: 'service'
     },
     {
-      title: '¿CUÁL ES TU PRESUPUESTO?',
+      title: '¿CUÁL ES EL NIVEL DE INVERSIÓN ESTIMADO?',
       options: [
         'Menos de $150 USD',
         '$150 - $400 USD',
         '$400 - $800 USD',
         'Más de $800 USD',
-        'Prefiero platicarlo primero'
+        'Prefiero discutir los números en llamada'
       ],
       field: 'budget'
     },
     {
-      title: '¿CUÁNDO LO NECESITAS?',
+      title: '¿PARA CUÁNDO ESPERAS LANZAR EL PROYECTO?',
       options: [
         'Lo antes posible',
         'En 2-4 semanas',
@@ -1093,7 +1097,7 @@ const ContactHub = () => {
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="mb-20">
           <span className="text-accent font-black uppercase tracking-[0.5em] text-xs mb-4 block">CONTACTO</span>
-          <h2 className="text-5xl md:text-7xl font-black text-white italic tracking-tighter leading-[0.85]">
+          <h2 className="text-4xl sm:text-5xl md:text-7xl font-black text-white italic tracking-tighter leading-[0.85]">
             Hablemos <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">de tu proyecto</span>
           </h2>
           <p className="text-slate-400 text-xl font-medium mt-6">Elige cómo quieres contactarnos: cotización rápida o contacto directo.</p>
@@ -1252,7 +1256,7 @@ const ContactHub = () => {
                                 type="button"
                                 onClick={handleApplyDiscount}
                                 disabled={!discountCode.trim() || discountStatus === 'loading'}
-                                className="bg-[#7B2CBF] hover:bg-[#8e39db] disabled:bg-[#333333] disabled:text-slate-500 text-white font-bold px-6 py-3 rounded-xl transition-colors flex items-center justify-center min-w-[100px] shadow-[0_0_15px_rgba(123,44,191,0.3)] disabled:shadow-none"
+                                className="bg-[#7B2CBF] hover:bg-[#8e39db] disabled:bg-[#333333] disabled:text-slate-500 text-white font-bold px-6 py-3 rounded-xl transition-colors flex items-center justify-center min-w-[100px] shadow-[0_0_15px_rgba(123, 44, 191,0.3)] disabled:shadow-none"
                               >
                                 {discountStatus === 'loading' ? (
                                   <span className="material-symbols-outlined animate-spin text-xl">progress_activity</span>
@@ -1403,7 +1407,7 @@ const ContactHub = () => {
                 <p className="text-xs font-black text-slate-500 uppercase tracking-[0.3em]">SOCIAL:</p>
                 <div className="flex gap-4">
                   {['Instagram', 'LinkedIn', 'Behance'].map((social) => (
-                    <a key={social} href="#" className="size-10 rounded-full border border-white/10 flex items-center justify-center text-slate-400 hover:text-accent hover:border-accent transition-all">
+                    <a key={social} href="javascript:void(0)" className="size-10 rounded-full border border-white/10 flex items-center justify-center text-slate-400 hover:text-accent hover:border-accent transition-all">
                       <span className="material-symbols-outlined text-xl">share</span>
                     </a>
                   ))}
@@ -1422,18 +1426,6 @@ const ContactHub = () => {
 
 
 const Footer = () => {
-  const [email, setEmail] = useState('');
-  const [subscribed, setSubscribed] = useState(false);
-
-  const handleSubscribe = (e) => {
-    e.preventDefault();
-    if (email) {
-      setSubscribed(true);
-      setEmail('');
-      setTimeout(() => setSubscribed(false), 3000);
-    }
-  };
-
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -1458,30 +1450,11 @@ const Footer = () => {
               Transformación digital que no se detiene. Innovación y diseño audaz para el futuro del RCM y el branding.
             </p>
 
-            <div className="space-y-4 pt-4 border-t border-white/5">
-              <p className="text-white text-xs font-black uppercase tracking-widest">Newsletter</p>
-              <p className="text-xs">Recibe tips de diseño y tecnología</p>
-              <form onSubmit={handleSubscribe} className="relative group">
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Tu email"
-                  className="w-full bg-[#111111] border border-[#333333] rounded-xl py-3 px-4 text-white text-sm focus:outline-none focus:border-accent transition-all"
-                />
-                <button
-                  type="submit"
-                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-primary hover:bg-primary/80 text-white rounded-lg p-1.5 transition-all"
-                >
-                  <span className="material-symbols-outlined text-sm">{subscribed ? 'check' : 'arrow_forward'}</span>
-                </button>
-              </form>
-              {subscribed && <p className="text-accent text-[10px] animate-pulse">¡Gracias por suscribirte!</p>}
-            </div>
+            
 
             <div className="flex gap-4 pt-2">
               {['Instagram', 'LinkedIn', 'Behance', 'Dribbble'].map((social) => (
-                <a key={social} href="#" className="text-[#A1A1AA] hover:text-accent transition-colors">
+                <a key={social} href="javascript:void(0)" className="text-[#A1A1AA] hover:text-accent transition-colors">
                   <span className="material-symbols-outlined text-xl">share</span>
                 </a>
               ))}
@@ -1494,7 +1467,7 @@ const Footer = () => {
             <ul className="space-y-4 text-sm font-medium">
               {['Landing Pages', 'Diseño Gráfico', 'Edición Video', 'E-commerce', 'RCM'].map((link) => (
                 <li key={link}>
-                  <a href="#" className="hover:text-accent transition-all duration-300 flex items-center gap-2 group">
+                  <a href="javascript:void(0)" className="hover:text-accent transition-all duration-300 flex items-center gap-2 group">
                     <span className="w-0 h-[1px] bg-accent transition-all group-hover:w-3"></span>
                     {link}
                   </a>
@@ -1529,7 +1502,7 @@ const Footer = () => {
             <ul className="space-y-4 text-sm font-medium">
               {['Términos de servicio', 'Política de privacidad'].map((link) => (
                 <li key={link}>
-                  <a href="#" className="hover:text-accent transition-all duration-300 flex items-center gap-2 group">
+                  <a href="javascript:void(0)" className="hover:text-accent transition-all duration-300 flex items-center gap-2 group">
                     <span className="w-0 h-[1px] bg-accent transition-all group-hover:w-3"></span>
                     {link}
                   </a>
