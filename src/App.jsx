@@ -334,12 +334,47 @@ const LiquidGradientText = ({ children }) => {
 };
 
 const Navbar = () => {
-  const [activeTab, setActiveTab] = useState('Home'); // Assuming 'Home' is the default active tab
+  const [activeTab, setActiveTab] = useState('Home');
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = ['home', 'services', 'portfolio', 'testimonials', 'contact'];
+      let current = '';
+
+      for (const section of sections) {
+        const element = document.getElementById(section);
+        if (element) {
+          const rect = element.getBoundingClientRect();
+          if (rect.top <= 120 && rect.bottom >= 120) {
+            current = section.charAt(0).toUpperCase() + section.slice(1);
+            break;
+          }
+        }
+      }
+      
+      if (current && current !== activeTab) {
+        setActiveTab(current);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [activeTab]);
+
+  const scrollToSection = (item) => {
+    const element = document.getElementById(item.toLowerCase());
+    if (element) {
+      const y = element.getBoundingClientRect().top + window.scrollY - 80;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+      setActiveTab(item);
+    }
+  };
+
   return (
     <nav className="fixed w-full z-50 bg-[#0A0A0A]/80 backdrop-blur-xl border-b border-white/5 transition-all duration-300">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 md:px-8">
         <div className="flex items-center justify-between h-16 sm:h-20">
-          <div className="flex-shrink-0 flex items-center gap-3 relative z-10">
+          <div className="flex-shrink-0 flex items-center gap-3 relative z-10 cursor-pointer" onClick={() => scrollToSection('Home')}>
             <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 border-white/20 flex items-center justify-center">
               <div className="w-3 h-3 sm:w-4 sm:h-4 bg-white rounded-full"></div>
             </div>
@@ -350,7 +385,7 @@ const Navbar = () => {
               {['Home', 'Services', 'Portfolio', 'Testimonials', 'Contact'].map((item) => (
                 <button
                   key={item}
-                  onClick={() => activeTab === item ? null : setActiveTab(item)}
+                  onClick={() => scrollToSection(item)}
                   className={`text-sm font-medium transition-all duration-300 ${activeTab === item
                       ? 'text-white'
                       : 'text-white/50 hover:text-purple-400'
@@ -362,9 +397,9 @@ const Navbar = () => {
             </div>
           </div>
           <div className="relative z-10 flex space-x-2 sm:space-x-4">
-            <a href="#contact" className="glow-effect bg-purple-600/20 text-purple-400 hover:bg-purple-600 hover:text-white px-4 py-2 sm:px-6 sm:py-2.5 rounded-lg text-xs sm:text-sm font-bold transition-all duration-300 tracking-wider">
+            <button onClick={() => scrollToSection('Contact')} className="glow-effect bg-purple-600/20 text-purple-400 hover:bg-purple-600 hover:text-white px-4 py-2 sm:px-6 sm:py-2.5 rounded-lg text-xs sm:text-sm font-bold transition-all duration-300 tracking-wider">
               IMPULSAR MI NEGOCIO
-            </a>
+            </button>
           </div>
         </div>
       </div>
@@ -372,54 +407,170 @@ const Navbar = () => {
   );
 };
 
+const GlassCard = ({ icon, delay, floatingRange, style }) => (
+  <motion.div
+    animate={{ y: floatingRange }}
+    transition={{
+      duration: 6,
+      repeat: Infinity,
+      repeatType: "reverse",
+      ease: "easeInOut",
+      delay: delay,
+    }}
+    className="absolute hidden xl:flex flex-col p-6 rounded-3xl bg-white/[0.03] backdrop-blur-2xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] z-20 pointer-events-auto cursor-pointer group hover:bg-white/[0.05] hover:border-accent/30 transition-all duration-500 overflow-hidden"
+    style={style}
+  >
+    {/* Animated subtle glow on hover */}
+    <div className="absolute inset-0 bg-gradient-to-br from-accent/0 via-accent/0 to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+    
+    <div className="flex flex-col gap-4 w-36 relative z-10">
+      <div className="flex items-center gap-3 w-full">
+        <div className="size-2 rounded-full bg-accent animate-pulse shadow-[0_0_10px_rgba(173,255,47,0.8)]"></div>
+        <div className="h-1.5 grow rounded-full bg-white/30"></div>
+      </div>
+      <div className="space-y-2 mt-2">
+        <div className="h-1.5 w-full rounded-full bg-white/10 group-hover:bg-white/20 transition-colors"></div>
+        <div className="h-1.5 w-4/5 rounded-full bg-white/10 group-hover:bg-white/20 transition-colors"></div>
+        <div className="h-1.5 w-3/5 rounded-full bg-accent/20 group-hover:bg-accent/40 transition-colors"></div>
+      </div>
+      <div className="flex justify-between items-end mt-4">
+        {icon && <span className="material-symbols-outlined text-white/50 group-hover:text-accent transition-colors duration-300 text-xl">{icon}</span>}
+        <div className="flex gap-1">
+          <div className="size-1 rounded-full bg-white/30"></div>
+          <div className="size-1 rounded-full bg-white/30"></div>
+          <div className="size-1 rounded-full bg-white/30"></div>
+        </div>
+      </div>
+    </div>
+  </motion.div>
+);
+
+const ZenEclipse = () => {
+  return (
+    <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0 overflow-hidden">
+      
+      {/* Intense Background Glow (Corona) */}
+      <div className="absolute rounded-full size-[500px] md:size-[800px] bg-[#ADFF2F]/20 blur-[100px] mix-blend-screen opacity-50 animate-pulse" style={{ animationDuration: '4s' }}></div>
+      <div className="absolute rounded-full size-[300px] md:size-[500px] bg-white/10 blur-[60px] mix-blend-screen"></div>
+
+      {/* The Enso Mask (Zen Circle SVG - Optimized for performance) */}
+      <div className="relative size-[500px] md:size-[800px] lg:size-[1000px] flex items-center justify-center opacity-90">
+        <motion.svg
+          viewBox="0 0 200 200"
+          className="w-full h-full absolute inset-0 text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.7)]"
+          style={{ willChange: 'transform' }} /* Hardware acceleration */
+          initial={{ rotate: 0 }}
+          animate={{ rotate: 360 }}
+          transition={{ duration: 180, repeat: Infinity, ease: "linear" }}
+        >
+          {/* Base organic circle - Solid core pass */}
+          <path
+            d="M 100,20 C 150,20 180,50 180,100 C 180,150 150,180 100,180 C 50,180 20,150 20,100 C 20,50 50,20 100,20"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="7"
+            strokeLinecap="round"
+            style={{
+              strokeDasharray: '280, 120',
+              strokeDashoffset: '50',
+              opacity: 0.95
+            }}
+          />
+          {/* Frayed inner stroke for brush texture */}
+          <path
+            d="M 100,22 C 145,22 178,52 178,100 C 178,145 148,178 100,178 C 55,178 22,145 22,100 C 22,55 52,22 100,22"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="3"
+            strokeLinecap="round"
+            style={{
+              strokeDasharray: '40, 10, 80, 20, 100, 30',
+              strokeDashoffset: '10',
+              opacity: 0.6
+            }}
+          />
+          {/* Secondary frayed stroke for accent color */}
+          <path
+            d="M 100,18 C 155,18 182,55 182,100 C 182,155 155,182 100,182 C 45,182 18,155 18,100 C 18,45 45,18 100,18"
+            fill="none"
+            stroke="#ADFF2F"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            style={{
+              strokeDasharray: '20, 60, 120, 40, 50, 80',
+              opacity: 0.8
+            }}
+          />
+          {/* Geometric / Minimal Splatters */}
+          <circle cx="165" cy="45" r="1.5" fill="currentColor" />
+          <circle cx="175" cy="80" r="1" fill="#ADFF2F" opacity="0.8"/>
+          <circle cx="35" cy="155" r="2" fill="currentColor" opacity="0.5"/>
+          <circle cx="70" cy="25" r="1.5" fill="#ADFF2F" opacity="0.6"/>
+        </motion.svg>
+        
+        {/* The Black Moon (covering the core of the eclipse) */}
+        <div className="absolute inset-[22%] rounded-full bg-[#030303] shadow-[inset_0_0_80px_rgba(0,0,0,1)] z-10 border border-white/5"></div>
+      </div>
+
+    </div>
+  );
+};
+
 const Hero = () => {
   const { scrollYProgress } = useScroll();
-  const scrollProgress = useTransform(scrollYProgress, [0, 1], [0, 1]);
   const yText = useTransform(scrollYProgress, [0, 1], ['0%', '150%']);
   const opacityText = useTransform(scrollYProgress, [0, 0.4], [1, 0]);
 
   return (
-    <section className="relative min-h-[90vh] flex items-center justify-center pt-24 lg:pt-0 hero-gradient px-6 md:px-10 lg:px-20 overflow-hidden" id="home">
-      <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ backgroundImage: "radial-gradient(#ADFF2F 0.5px, transparent 0.5px)", backgroundSize: "40px 40px" }}></div>
+    <section className="relative min-h-[100vh] flex items-center justify-center pt-24 lg:pt-0 bg-[#000000] px-6 md:px-10 lg:px-20 overflow-hidden" id="home">
+      
+      {/* Zen Eclipse Background Visual */}
+      <div className="absolute inset-0 pointer-events-none z-0">
+        <ZenEclipse />
+      </div>
 
-      <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-center z-10 relative">
-        <div className="relative flex justify-center lg:justify-start order-2 lg:order-1 transition-all duration-700 pointer-events-auto">
-          <div className="relative size-96 md:size-[600px] flex items-center justify-center">
-            <div className="absolute inset-0 rounded-full border border-white/5 animate-[spin_30s_linear_infinite]"></div>
-            <div className="absolute inset-12 rounded-full border border-primary/10 animate-[spin_20s_linear_infinite_reverse]"></div>
-            <div className="absolute inset-24 rounded-full magnetic-ring opacity-30 animate-[spin_15s_linear_infinite]"></div>
+      {/* Orbiting Glassmorphic UI Cards */}
+      <GlassCard delay={0} floatingRange={[-15, 15]} style={{ top: '25%', left: '10%', rotate: -6 }} icon="dashboard" />
+      <GlassCard delay={1.5} floatingRange={[15, -15]} style={{ bottom: '20%', left: '15%', rotate: 8 }} icon="analytics" />
+      <GlassCard delay={0.7} floatingRange={[-20, 10]} style={{ top: '35%', right: '10%', rotate: 12 }} icon="smartphone" />
+      <GlassCard delay={2.2} floatingRange={[10, -20]} style={{ bottom: '25%', right: '18%', rotate: -5 }} icon="code" />
 
-            <div className="relative z-20 flex items-center justify-center kanji-glow rounded-full border-2 border-accent/10 bg-background-dark/30">
-              <div className="scale-110 md:scale-150 origin-center transition-transform">
-                <MagneticKanjiClock size={320} />
-              </div>
-            </div>
-
-            <div className="absolute top-0 right-10 size-6 bg-accent rounded-full blur-[3px] animate-pulse opacity-40"></div>
-            <div className="absolute bottom-10 left-0 size-8 bg-primary rounded-full blur-[4px] opacity-30"></div>
+      {/* Main Content Overlay */}
+      <div className="max-w-7xl mx-auto w-full flex flex-col items-center justify-center z-30 relative mt-10 lg:mt-0 pointer-events-none">
+        <motion.div className="flex flex-col text-center xl:text-left pointer-events-auto items-center xl:items-start" style={{ y: yText, opacity: opacityText }}>
+          
+          {/* Improved Visibility for Overline text with a glassmorphism pill */}
+          <div className="inline-flex items-center justify-center px-5 py-2 rounded-full border border-accent/20 bg-black/40 backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.4)] mb-8">
+            <span className="text-accent font-bold uppercase tracking-[0.3em] text-[10px] sm:text-xs drop-shadow-[0_0_8px_rgba(173,255,47,0.5)]">
+              La Agencia Para Líderes
+            </span>
           </div>
-        </div>
-
-        <motion.div className="flex flex-col text-center lg:text-left order-1 lg:order-2" style={{ y: yText, opacity: opacityText }}>
-          <span className="text-accent font-bold uppercase tracking-[0.4em] text-xs mb-4 block">La Agencia Para Líderes</span>
-          <h2 className="text-5xl sm:text-6xl md:text-8xl lg:text-[100px] font-black italic uppercase tracking-tighter leading-[0.9] mb-8 text-white">
+          
+          <h2 className="text-5xl sm:text-7xl md:text-8xl lg:text-[120px] font-black italic uppercase tracking-tighter leading-[0.85] mb-8 text-white text-center xl:text-left drop-shadow-[0_10px_30px_rgba(0,0,0,0.8)] filter">
             DOMINA TU <br />
-            <LiquidGradientText>MERCADO</LiquidGradientText>
+            <span className="text-transparent bg-clip-text bg-gradient-to-br from-[#ffffff] via-[#e2e8f0] to-[#64748b] drop-shadow-[0_0_20px_rgba(255,255,255,0.2)] pr-2">MERCADO</span>
           </h2>
-          <p className="text-slate-400 text-lg md:text-xl max-w-xl mb-12 font-medium leading-relaxed">
-            Construimos plataformas digitales que atraen clientes y multiplican tus ventas garantizado, para que tú te enfoques en escalar tu negocio.
+          
+          {/* Improved Copywriting: Benefit-driven, specific, and clear */}
+          <p className="text-slate-200 text-lg md:text-xl lg:text-2xl max-w-2xl mb-12 font-medium leading-relaxed text-center xl:text-left drop-shadow-[0_4px_10px_rgba(0,0,0,0.8)] px-2 sm:px-0">
+            Diseñamos ecosistemas digitales de élite que transforman clics en clientes de alto valor. Deja de competir, comienza a liderar y multiplica tus ventas garantizado.
           </p>
-          <div className="flex flex-col sm:flex-row gap-5 justify-center lg:justify-start w-full px-4 sm:px-0">
-            <a href="#contact" className="inline-block w-full sm:w-auto bg-primary hover:bg-primary/80 shadow-[0_0_30px_rgba(123, 44, 191,0.4)] text-white px-8 sm:px-10 py-4 sm:py-5 rounded-xl text-base sm:text-lg font-black uppercase tracking-widest transition-all transform hover:scale-105 active:scale-95 border-b-4 border-primary/50 text-center">IMPULSAR MI NEGOCIO</a>
-            <a href="#portfolio" className="inline-block w-full sm:w-auto border border-white/10 hover:bg-white/5 text-white px-8 py-4 sm:py-5 rounded-xl text-base sm:text-lg font-bold transition-all active:scale-95 text-center">Ver Casos de Éxito</a>
+          
+          <div className="flex flex-col sm:flex-row gap-6 justify-center xl:justify-start w-full px-4 sm:px-0">
+            <a href="#contact" className="inline-flex items-center justify-center w-full sm:w-auto bg-[#ADFF2F] hover:bg-[#97e028] shadow-[0_0_40px_rgba(173,255,47,0.4)] text-black px-10 py-5 rounded-2xl text-base sm:text-lg font-black uppercase tracking-widest transition-all transform hover:scale-105 active:scale-95 text-center">
+              Iniciar Proyecto
+            </a>
+            <a href="#portfolio" className="inline-flex items-center justify-center w-full sm:w-auto bg-[#0A0A0A]/60 backdrop-blur-xl border border-white/10 hover:bg-white/[0.08] text-white px-10 py-5 rounded-2xl text-base sm:text-lg font-bold transition-all hover:border-white/30 active:scale-95 text-center shadow-[0_0_30px_rgba(0,0,0,0.5)]">
+              Ver Casos de Éxito
+            </a>
           </div>
         </motion.div>
       </div>
 
       {/* Dark overlay that covers the section as we scroll down */}
       <motion.div
-        className="absolute inset-x-0 bottom-0 top-[60%] bg-gradient-to-t from-background-dark via-background-dark/80 to-transparent pointer-events-none transition-opacity duration-500"
-        style={{ opacity: useTransform(scrollYProgress, [0, 0.25], [0, 1]), zIndex: 5 }}
+        className="absolute inset-x-0 bottom-0 top-[60%] bg-gradient-to-t from-[#0A0A0A] via-[#0A0A0A]/80 to-transparent pointer-events-none transition-opacity duration-500"
+        style={{ opacity: useTransform(scrollYProgress, [0, 0.25], [0, 1]), zIndex: 10 }}
       />
     </section>
   );
@@ -551,7 +702,7 @@ const Services = () => {
             <span className="text-accent font-black uppercase tracking-[0.5em] text-xs mb-6 block drop-shadow-[0_0_10px_rgba(173,255,47,0.5)]">RESULTADOS TANGIBLES</span>
             <h2 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black text-white italic tracking-tighter leading-[0.85] mb-6 sm:mb-8">
               Sistemas digitales que <br className="hidden md:block" />
-              generan <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">ventas</span>
+              generan <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent pr-2">ventas</span>
             </h2>
           </div>
           <p className="text-slate-400 text-xl font-medium max-w-sm lg:mb-4">No solo creamos pantallas bonitas; construimos activos digitales diseñados para asegurar tu crecimiento.</p>
@@ -772,7 +923,7 @@ const ProcessCardDesktop = ({ step, index }) => {
       <div className="bg-[#111111] p-8 rounded-3xl border border-white/5 hover:border-primary/30 transition-all duration-500 hover:-translate-y-2 group-hover:shadow-[0_20px_40px_rgba(0,0,0,0.4)] relative overflow-hidden flex-grow flex flex-col">
         <div className="flex justify-between items-start mb-4">
           <h4 className="text-white font-black italic text-2xl group-hover:text-accent transition-colors relative z-10">{step.title}</h4>
-          <span className="text-4xl font-black italic font-mono relative z-10 text-transparent bg-clip-text bg-gradient-to-br from-primary to-accent">
+          <span className="text-4xl font-black italic font-mono relative z-10 text-transparent bg-clip-text bg-gradient-to-br from-primary to-accent pr-1">
             0{targetNumber}
           </span>
         </div>
@@ -802,7 +953,7 @@ const ProcessCardMobile = ({ step, index }) => {
           <div className="size-12 rounded-xl bg-accent/10 flex items-center justify-center border border-accent/20">
             <span className="material-symbols-outlined text-accent text-2xl">{step.icon}</span>
           </div>
-          <span className="text-4xl font-black italic font-mono text-transparent bg-clip-text bg-gradient-to-br from-primary to-accent">
+          <span className="text-4xl font-black italic font-mono text-transparent bg-clip-text bg-gradient-to-br from-primary to-accent pr-1">
             0{targetNumber}
           </span>
         </div>
@@ -860,7 +1011,7 @@ const Process = () => {
           >
             <span className="text-accent font-black uppercase tracking-[0.5em] text-xs mb-4 block">NUESTRO MÉTODO</span>
             <h2 className="text-4xl sm:text-5xl md:text-7xl font-black text-white italic tracking-tighter leading-[0.85] mb-6">
-              Un flujo de trabajo <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">para ganar</span>
+              Un flujo de trabajo <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent pr-2">para ganar</span>
             </h2>
             <p className="text-slate-400 text-xl font-medium max-w-2xl mx-auto">Sin demoras, sin excusas. Solo resultados construidos paso a paso.</p>
           </motion.div>
@@ -918,6 +1069,8 @@ const ContactHub = () => {
     email: '',
     whatsapp: ''
   });
+  const [formErrors, setFormErrors] = useState({ name: false, email: false, whatsapp: false });
+  const [countryCode, setCountryCode] = useState('+58');
   const [isSuccess, setIsSuccess] = useState(false);
   const [discountCode, setDiscountCode] = useState('');
   const [discountStatus, setDiscountStatus] = useState('idle'); // idle, loading, success, error
@@ -1021,13 +1174,28 @@ const ContactHub = () => {
 
   const handleFinalSubmit = (e) => {
     e.preventDefault();
-    if (!formData.whatsapp) return;
+    
+    // Validation
+    const errors = {
+      name: !formData.name.trim(),
+      email: !formData.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email),
+      whatsapp: !formData.whatsapp.trim() || formData.whatsapp.length < 4
+    };
+
+    setFormErrors(errors);
+
+    if (errors.name || errors.email || errors.whatsapp) {
+      return; 
+    }
 
     setIsSuccess(true);
 
+    const fullClientPhone = `${countryCode} ${formData.whatsapp}`;
+
     const baseMessage = `🚀 *Nueva Solicitud Estratégica - KAITEN*\n\n` +
-      `👤 *Nombre:* ${formData.name || 'No especificado'}\n` +
-      `✉️ *Email:* ${formData.email || 'No especificado'}\n` +
+      `👤 *Nombre:* ${formData.name}\n` +
+      `✉️ *Email:* ${formData.email}\n` +
+      `📱 *WhatsApp:* ${fullClientPhone}\n` +
       `🎯 *Servicio de interés:* ${formData.service || 'No especificado'}\n` +
       `💰 *Inversión estimada:* ${formData.budget || 'No especificado'}\n` +
       `⏳ *Tiempo esperado:* ${formData.timeframe || 'No especificado'}\n\n` +
@@ -1041,7 +1209,7 @@ const ContactHub = () => {
     const whatsappUrl = `https://wa.me/584125626559?text=${encodedMessage}`;
 
     setTimeout(() => {
-      window.open(whatsappUrl, '_blank');
+      window.location.href = whatsappUrl;
     }, 2000);
   };
 
@@ -1053,7 +1221,7 @@ const ContactHub = () => {
         <div className="mb-20">
           <span className="text-accent font-black uppercase tracking-[0.5em] text-xs mb-4 block">CONTACTO</span>
           <h2 className="text-4xl sm:text-5xl md:text-7xl font-black text-white italic tracking-tighter leading-[0.85]">
-            Hablemos <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">de tu proyecto</span>
+            Hablemos <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent pr-2">de tu proyecto</span>
           </h2>
           <p className="text-slate-400 text-xl font-medium mt-6">Elige cómo quieres contactarnos: cotización rápida o contacto directo.</p>
         </div>
@@ -1136,7 +1304,7 @@ const ContactHub = () => {
                       </div>
                     </div>
                   ) : (
-                    <form onSubmit={handleFinalSubmit} className="space-y-8">
+                    <form onSubmit={handleFinalSubmit} className="space-y-8" noValidate>
                       <div className="flex items-center gap-4 mb-10">
                         <span className="text-accent text-xs font-black uppercase tracking-[0.3em]">Finalizar Cotización</span>
                         <div className="h-px flex-grow bg-white/5"></div>
@@ -1145,40 +1313,79 @@ const ContactHub = () => {
                       <div className="space-y-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Nombre completo</label>
+                            <label className={`text-[10px] font-black uppercase tracking-widest ml-1 transition-colors ${formErrors.name ? 'text-red-500' : 'text-slate-500'}`}>
+                              Nombre completo {formErrors.name && '*'}
+                            </label>
                             <input
-                              required
                               type="text"
                               value={formData.name}
-                              onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                              onChange={(e) => {
+                                setFormData(prev => ({ ...prev, name: e.target.value }));
+                                if (formErrors.name) setFormErrors(prev => ({ ...prev, name: false }));
+                              }}
                               placeholder="Tu nombre"
-                              className="w-full bg-[#161616] border border-white/10 rounded-xl px-5 py-4 text-white focus:outline-none focus:border-accent transition-all placeholder:text-slate-700 underline-none"
+                              className={`w-full bg-[#161616] border rounded-xl px-5 py-4 text-white focus:outline-none transition-all placeholder:text-slate-700 ${
+                                formErrors.name ? 'border-red-500 focus:border-red-400 shadow-[0_0_10px_rgba(239,68,68,0.15)] bg-red-500/5' : 'border-white/10 focus:border-accent'
+                              }`}
                             />
                           </div>
                           <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Correo electrónico</label>
+                            <label className={`text-[10px] font-black uppercase tracking-widest ml-1 transition-colors ${formErrors.email ? 'text-red-500' : 'text-slate-500'}`}>
+                              Correo electrónico {formErrors.email && '*'}
+                            </label>
                             <input
-                              required
                               type="email"
                               value={formData.email}
-                              onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                              onChange={(e) => {
+                                setFormData(prev => ({ ...prev, email: e.target.value }));
+                                if (formErrors.email) setFormErrors(prev => ({ ...prev, email: false }));
+                              }}
                               placeholder="email@ejemplo.com"
-                              className="w-full bg-[#161616] border border-white/10 rounded-xl px-5 py-4 text-white focus:outline-none focus:border-accent transition-all placeholder:text-slate-700"
+                              className={`w-full bg-[#161616] border rounded-xl px-5 py-4 text-white focus:outline-none transition-all placeholder:text-slate-700 ${
+                                formErrors.email ? 'border-red-500 focus:border-red-400 shadow-[0_0_10px_rgba(239,68,68,0.15)] bg-red-500/5' : 'border-white/10 focus:border-accent'
+                              }`}
                             />
                           </div>
                         </div>
                         <div className="space-y-2">
-                          <label className="text-[10px] font-black uppercase tracking-widest text-slate-500 ml-1">Número de WhatsApp</label>
-                          <div className="relative group">
-                            <input
-                              required
-                              type="tel"
-                              value={formData.whatsapp}
-                              onChange={(e) => setFormData(prev => ({ ...prev, whatsapp: e.target.value }))}
-                              placeholder="+58 412 562 6559"
-                              className="w-full bg-[#161616] border border-white/10 rounded-xl px-5 py-4 text-white focus:outline-none focus:border-accent transition-all placeholder:text-slate-700"
-                            />
-                            <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within:text-accent transition-colors">phone_iphone</span>
+                          <label className={`text-[10px] font-black uppercase tracking-widest ml-1 transition-colors ${formErrors.whatsapp ? 'text-red-500' : 'text-slate-500'}`}>
+                            Número de WhatsApp {formErrors.whatsapp && '*'}
+                          </label>
+                          <div className="flex gap-2 relative group">
+                            <select
+                              value={countryCode}
+                              onChange={(e) => setCountryCode(e.target.value)}
+                              className={`w-[110px] sm:w-[130px] bg-[#161616] border rounded-xl px-2 sm:px-3 py-4 text-white focus:outline-none transition-all ${
+                                formErrors.whatsapp ? 'border-red-500 focus:border-red-400 bg-red-500/5' : 'border-white/10 focus:border-accent'
+                              }`}
+                            >
+                              <option value="+58">VE (+58)</option>
+                              <option value="+57">CO (+57)</option>
+                              <option value="+54">AR (+54)</option>
+                              <option value="+56">CL (+56)</option>
+                              <option value="+52">MX (+52)</option>
+                              <option value="+34">ES (+34)</option>
+                              <option value="+1">US (+1)</option>
+                              <option value="+51">PE (+51)</option>
+                              <option value="+593">EC (+593)</option>
+                              <option value="+507">PA (+507)</option>
+                              <option value="+506">CR (+506)</option>
+                            </select>
+                            <div className="relative flex-grow">
+                              <input
+                                type="tel"
+                                value={formData.whatsapp}
+                                onChange={(e) => {
+                                  setFormData(prev => ({ ...prev, whatsapp: e.target.value }));
+                                  if (formErrors.whatsapp) setFormErrors(prev => ({ ...prev, whatsapp: false }));
+                                }}
+                                placeholder="412 562 6559"
+                                className={`w-full bg-[#161616] border rounded-xl pl-4 pr-10 py-4 text-white focus:outline-none transition-all placeholder:text-slate-700 ${
+                                  formErrors.whatsapp ? 'border-red-500 focus:border-red-400 shadow-[0_0_10px_rgba(239,68,68,0.15)] bg-red-500/5 placeholder:text-red-900/40 text-red-100' : 'border-white/10 focus:border-accent'
+                                }`}
+                              />
+                              <span className={`material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 transition-colors ${formErrors.whatsapp ? 'text-red-500' : 'text-slate-600 group-focus-within:text-accent'}`}>phone_iphone</span>
+                            </div>
                           </div>
                         </div>
                       </div>
