@@ -753,30 +753,7 @@ const Testimonials = () => {
 };
 
 const ProcessCardDesktop = ({ step, index }) => {
-  const [isHovered, setIsHovered] = useState(false);
-  const [displayChar, setDisplayChar] = useState('-');
-
   const targetNumber = (index + 1).toString();
-
-  useEffect(() => {
-    let interval;
-    if (isHovered) {
-      let ticks = 0;
-      interval = setInterval(() => {
-        if (ticks < 10) {
-          const chars = '0123456789!@#$%&*';
-          setDisplayChar(chars[Math.floor(Math.random() * chars.length)]);
-          ticks++;
-        } else {
-          setDisplayChar(targetNumber);
-          clearInterval(interval);
-        }
-      }, 40);
-    } else {
-      setDisplayChar('-');
-    }
-    return () => clearInterval(interval);
-  }, [isHovered, targetNumber]);
 
   return (
     <motion.div
@@ -785,8 +762,6 @@ const ProcessCardDesktop = ({ step, index }) => {
       viewport={{ once: true }}
       transition={{ delay: index * 0.2 }}
       className="group pt-12 cursor-pointer h-full flex flex-col"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
     >
       <div className="relative mb-8 flex justify-center">
         <div className="size-16 rounded-2xl bg-[#111111] border border-white/10 flex items-center justify-center group-hover:border-accent transition-all duration-500 shadow-xl relative z-10">
@@ -797,8 +772,8 @@ const ProcessCardDesktop = ({ step, index }) => {
       <div className="bg-[#111111] p-8 rounded-3xl border border-white/5 hover:border-primary/30 transition-all duration-500 hover:-translate-y-2 group-hover:shadow-[0_20px_40px_rgba(0,0,0,0.4)] relative overflow-hidden flex-grow flex flex-col">
         <div className="flex justify-between items-start mb-4">
           <h4 className="text-white font-black italic text-2xl group-hover:text-accent transition-colors relative z-10">{step.title}</h4>
-          <span className={`text-4xl font-black italic font-mono transition-opacity duration-300 relative z-10 ${isHovered ? 'opacity-100 text-transparent bg-clip-text bg-gradient-to-br from-primary to-accent' : 'opacity-0'}`}>
-            0{displayChar}
+          <span className="text-4xl font-black italic font-mono relative z-10 text-transparent bg-clip-text bg-gradient-to-br from-primary to-accent">
+            0{targetNumber}
           </span>
         </div>
         <p className="text-slate-400 leading-relaxed mb-6 relative z-10">{step.desc}</p>
@@ -812,30 +787,7 @@ const ProcessCardDesktop = ({ step, index }) => {
 };
 
 const ProcessCardMobile = ({ step, index }) => {
-  const [isHovered, setIsHovered] = useState(false);
-  const [displayChar, setDisplayChar] = useState('-');
-
   const targetNumber = (index + 1).toString();
-
-  useEffect(() => {
-    let interval;
-    if (isHovered) {
-      let ticks = 0;
-      interval = setInterval(() => {
-        if (ticks < 10) {
-          const chars = '0123456789!@#$%&*';
-          setDisplayChar(chars[Math.floor(Math.random() * chars.length)]);
-          ticks++;
-        } else {
-          setDisplayChar(targetNumber);
-          clearInterval(interval);
-        }
-      }, 40);
-    } else {
-      setDisplayChar('-');
-    }
-    return () => clearInterval(interval);
-  }, [isHovered, targetNumber]);
 
   return (
     <motion.div
@@ -844,18 +796,14 @@ const ProcessCardMobile = ({ step, index }) => {
       viewport={{ once: true }}
       transition={{ delay: index * 0.2 }}
       className="relative pl-8 md:pl-12 cursor-pointer"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      onTouchStart={() => setIsHovered(true)}
-      onTouchEnd={() => setIsHovered(false)}
     >
       <div className="bg-[#111111] p-6 md:p-8 rounded-3xl border border-white/5 relative overflow-hidden group">
         <div className="flex justify-between items-center mb-6">
           <div className="size-12 rounded-xl bg-accent/10 flex items-center justify-center border border-accent/20">
             <span className="material-symbols-outlined text-accent text-2xl">{step.icon}</span>
           </div>
-          <span className={`text-4xl font-black italic font-mono transition-opacity duration-300 ${isHovered ? 'opacity-100 text-transparent bg-clip-text bg-gradient-to-br from-primary to-accent' : 'opacity-0'}`}>
-            0{displayChar}
+          <span className="text-4xl font-black italic font-mono text-transparent bg-clip-text bg-gradient-to-br from-primary to-accent">
+            0{targetNumber}
           </span>
         </div>
         <h4 className="text-white font-black italic text-2xl mb-3">{step.title}</h4>
