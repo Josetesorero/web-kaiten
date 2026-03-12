@@ -1077,12 +1077,19 @@ const ContactHub = () => {
 
     setIsSuccess(true);
 
-    let message = `Hola Kaiten, soy ${formData.name}. Me interesa: ${formData.service}. Presupuesto: ${formData.budget}. Tiempo: ${formData.timeframe}. Mi email: ${formData.email}`;
-    if (appliedDiscount) {
-      message += `.\n\nTengo el código de descuento: ${appliedDiscount.code} (-${appliedDiscount.percent}%)`;
-    }
+    const baseMessage = `🚀 *Nueva Solicitud Estratégica - KAITEN*\n\n` +
+      `👤 *Nombre:* ${formData.name || 'No especificado'}\n` +
+      `✉️ *Email:* ${formData.email || 'No especificado'}\n` +
+      `🎯 *Servicio de interés:* ${formData.service || 'No especificado'}\n` +
+      `💰 *Inversión estimada:* ${formData.budget || 'No especificado'}\n` +
+      `⏳ *Tiempo esperado:* ${formData.timeframe || 'No especificado'}\n\n` +
+      `¡Hola equipo Kaiten! ✨ Me gustaría conversar sobre mi proyecto. Quedo atento/a.`;
+      
+    const discountText = appliedDiscount 
+      ? `\n\n🎁 *Código VIP:* ${appliedDiscount.code} (-${appliedDiscount.percent}%)` 
+      : '';
 
-    const encodedMessage = encodeURIComponent(message);
+    const encodedMessage = encodeURIComponent(baseMessage + discountText);
     const whatsappUrl = `https://wa.me/584125626559?text=${encodedMessage}`;
 
     setTimeout(() => {
@@ -1362,12 +1369,14 @@ const ContactHub = () => {
 
               <div className="grid grid-cols-1 gap-10">
                 <div className="flex items-center gap-6 group cursor-pointer">
-                  <div className="size-14 rounded-2xl bg-accent/10 flex items-center justify-center border border-accent/20 group-hover:bg-accent/20 transition-all duration-500">
-                    <span className="material-symbols-outlined text-accent text-3xl">chat</span>
+                  <div className="size-14 rounded-2xl bg-[#25D366]/10 flex items-center justify-center border border-[#25D366]/20 group-hover:bg-[#25D366]/20 transition-all duration-500">
+                    <svg className="size-7 fill-[#25D366] group-hover:scale-110 transition-transform duration-500" viewBox="0 0 24 24">
+                      <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.417-.003 6.557-5.338 11.892-11.893 11.892-1.997-.001-3.951-.5-5.688-1.448l-6.305 1.652zm6.599-3.376c1.47.884 3.193 1.353 4.953 1.353 5.401 0 9.799-4.398 9.802-9.799.002-2.618-1.017-5.078-2.871-6.931-1.854-1.854-4.316-2.873-6.936-2.873-5.399 0-9.796 4.397-9.799 9.797-.001 1.761.468 3.479 1.357 4.953l-1.026 3.743 3.824-.997zm11.387-4.464c-.301-.15-1.779-.878-2.053-.978-.275-.1-.475-.15-.675.15-.199.301-.775.978-.95 1.178-.175.199-.35.225-.65.075-.3-.15-1.268-.467-2.413-1.487-.892-.795-1.494-1.778-1.669-2.078-.175-.3-.019-.462.13-.611.135-.134.3-.35.45-.525.148-.175.199-.301.3-.5.1-.199.05-.375-.025-.525-.075-.15-.675-1.625-.925-2.225-.244-.59-.491-.51-.675-.52-.174-.01-.374-.012-.574-.012s-.525.076-.8.376c-.275.3-1.05 1.028-1.05 2.508s1.075 2.903 1.225 3.103c.15.2.2.35.474.774 1.196 1.838 2.585 2.768 3.978 3.328.79.317 1.489.339 2.052.255.626-.094 1.778-.727 2.028-1.428s.25-.15.175-.3c-.075-.15-.275-.225-.575-.375z" />
+                    </svg>
                   </div>
                   <div>
                     <p className="text-xs font-black text-slate-500 uppercase tracking-widest mb-1">WhatsApp</p>
-                    <a href="https://wa.me/584125626559" target="_blank" rel="noopener noreferrer" className="text-white text-xl font-bold hover:text-accent transition-colors">+58 412 562 6559</a>
+                    <a href="https://wa.me/584125626559" target="_blank" rel="noopener noreferrer" className="text-white text-xl font-bold hover:text-[#25D366] transition-colors">+58 412 562 6559</a>
                   </div>
                 </div>
 
