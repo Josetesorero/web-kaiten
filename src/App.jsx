@@ -736,16 +736,15 @@ const PortfolioCard = ({ item }) => {
     >
       <img className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" src={item.img} alt={item.title} />
 
-      <div className="absolute inset-x-0 bottom-0 h-[80%] bg-gradient-to-t from-black via-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-6 flex flex-col justify-end translate-y-4 group-hover:translate-y-0">
+      <div className="absolute inset-x-0 bottom-0 h-[80%] bg-gradient-to-t from-black via-black/80 to-transparent md:opacity-0 md:group-hover:opacity-100 md:translate-y-4 md:group-hover:translate-y-0 opacity-100 translate-y-0 transition-all duration-300 p-6 flex flex-col justify-end">
         <h4 className="text-white text-2xl font-black italic mb-3">{item.title}</h4>
-        <div className="flex flex-wrap gap-2 mb-4">
+        <div className="flex flex-wrap gap-2 mb-2">
           {item.categories.map((cat, idx) => (
-            <span key={idx} className="px-2 py-1 rounded bg-[#1A1A1A] text-accent text-xs font-bold uppercase tracking-widest border border-accent/20">
+            <span key={idx} className="px-2 py-1 rounded bg-[#1A1A1A] text-accent text-[10px] sm:text-xs font-bold uppercase tracking-widest border border-accent/20">
               {cat}
             </span>
           ))}
         </div>
-        
       </div>
 
       {/* Glow effect on hover */}
