@@ -522,7 +522,7 @@ const Hero = () => {
   const opacityText = useTransform(scrollYProgress, [0, 0.4], [1, 0]);
 
   return (
-    <section className="relative min-h-[100vh] flex items-center justify-center pt-24 lg:pt-0 bg-[#000000] px-6 md:px-10 lg:px-20 overflow-hidden" id="home">
+    <section className="relative min-h-[100vh] flex items-center justify-center pt-20 lg:pt-0 bg-[#000000] px-6 md:px-10 lg:px-20 overflow-hidden" id="home">
       
       {/* Zen Eclipse Background Visual */}
       <div className="absolute inset-0 pointer-events-none z-0">
@@ -536,11 +536,11 @@ const Hero = () => {
       <GlassCard delay={2.2} floatingRange={[10, -20]} style={{ bottom: '25%', right: '18%', rotate: -5 }} icon="code" />
 
       {/* Main Content Overlay */}
-      <div className="max-w-7xl mx-auto w-full flex flex-col items-center justify-center z-30 relative mt-10 lg:mt-0 pointer-events-none">
+      <div className="max-w-7xl mx-auto w-full flex flex-col items-center justify-center z-30 relative mt-0 lg:mt-0 pointer-events-none">
         <motion.div className="flex flex-col text-center xl:text-left pointer-events-auto items-center xl:items-start" style={{ y: yText, opacity: opacityText }}>
           
           {/* Improved Visibility for Overline text with a glassmorphism pill */}
-          <div className="inline-flex items-center justify-center px-5 py-2 rounded-full border border-accent/20 bg-black/40 backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.4)] mb-8">
+          <div className="inline-flex items-center justify-center px-5 py-2 rounded-full border border-accent/20 bg-black/40 backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.4)] mb-4">
             <span className="text-accent font-bold uppercase tracking-[0.3em] text-[10px] sm:text-xs drop-shadow-[0_0_8px_rgba(173,255,47,0.5)]">
               La Agencia Para Líderes
             </span>
@@ -551,10 +551,12 @@ const Hero = () => {
             <span className="text-transparent bg-clip-text bg-gradient-to-br from-[#ffffff] via-[#e2e8f0] to-[#64748b] drop-shadow-[0_0_20px_rgba(255,255,255,0.2)] pr-2">MERCADO</span>
           </h2>
           
-          {/* Improved Copywriting: Benefit-driven, specific, and clear */}
-          <p className="text-slate-200 text-lg md:text-xl lg:text-2xl max-w-2xl mb-12 font-medium leading-relaxed text-center xl:text-left drop-shadow-[0_4px_10px_rgba(0,0,0,0.8)] px-2 sm:px-0">
-            Diseñamos ecosistemas digitales de élite que transforman clics en clientes de alto valor. Deja de competir, comienza a liderar y multiplica tus ventas garantizado.
-          </p>
+          {/* Improved Copywriting with enhanced mobile legibility */}
+          <div className="relative mb-12 px-6 py-4 sm:px-0 sm:py-0 rounded-3xl bg-black/10 sm:bg-transparent backdrop-blur-[2px] sm:backdrop-blur-0 border border-white/5 sm:border-none max-w-2xl">
+            <p className="text-slate-200 text-lg md:text-xl lg:text-2xl font-medium leading-relaxed text-center xl:text-left drop-shadow-[0_4px_10px_rgba(0,0,0,0.8)]">
+              Diseñamos ecosistemas digitales de élite que transforman clics en clientes de alto valor. Deja de competir, comienza a liderar y multiplica tus ventas garantizado.
+            </p>
+          </div>
           
           <div className="flex flex-col sm:flex-row gap-6 justify-center xl:justify-start w-full px-4 sm:px-0">
             <a href="#contact" className="inline-flex items-center justify-center w-full sm:w-auto bg-[#ADFF2F] hover:bg-[#97e028] shadow-[0_0_40px_rgba(173,255,47,0.4)] text-black px-10 py-5 rounded-2xl text-base sm:text-lg font-black uppercase tracking-widest transition-all transform hover:scale-105 active:scale-95 text-center">
